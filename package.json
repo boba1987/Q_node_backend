@@ -16,5 +16,9 @@
     "lodash": "^4.17.4",
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.3",
+    "eslint": "^4.13.1"
   }
 }
