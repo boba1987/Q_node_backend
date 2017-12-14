@@ -35,7 +35,7 @@ app.post('/login', function(req, res) {
   // usually this would be a database call:
   var user = users[_.findIndex(users, {name: name})];
   if( ! user ){
-    res.status(401).json({message:'user not found'});
+    res.status(401).json({message: 'User name or password does not match'});
   }
 
   if(user.password === password) {
@@ -44,6 +44,6 @@ app.post('/login', function(req, res) {
     var token = jwt.sign(payload, passportSettings.jwtOptions.secretOrKey);
     res.json({message: 'ok', token: token});
   } else {
-    res.status(401).json({message: 'Invalid password'});
+    res.status(401).json({message: 'User name or password does not match'});
   }
 });
