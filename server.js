@@ -42,7 +42,7 @@ app.post('/login', function(req, res) {
     // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
     var payload = {id: user.id};
     var token = jwt.sign(payload, passportSettings.jwtOptions.secretOrKey);
-    res.json({message: 'ok', token: token});
+    res.json({message: 'ok', token: token, user: user});
   } else {
     res.status(401).json({message: 'User name or password does not match'});
   }
