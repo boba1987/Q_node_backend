@@ -1,8 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const config = require('../config.json');
 
 // Connection URL
-const url = 'mongodb://localhost:27017/medexQ';
+const url = config.mongo;
 
 // Inset into database
 function insert(data, dbCollection, callback) {
