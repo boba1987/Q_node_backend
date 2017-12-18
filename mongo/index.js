@@ -46,12 +46,12 @@ function find(filter = {}, dbCollection, callback) {
   // Get the documents collection
   var collection = dbInstance.collection(dbCollection);
   // Find some documents
-  collection.find(filter).toArray(function(err, docs) {
+  collection.find(filter).toArray(function(err, result) {
     if (err) {
       console.log('Find error: ', err);
     }
     if (callback) {
-      callback(docs);
+      callback(result);
     }
   });
 }
