@@ -42,9 +42,15 @@ function update(filter, data, dbCollection, callback) {
 }
 
 // Search for documents in db
+/**
+  Example usage with text search:
+  find({ $text: { $search: 'oncologist' } }, 'messages', function(docs){
+    console.log(docs);
+  });
+**/
 function find(filter = {}, dbCollection, callback) {
   // Get the documents collection
-  var collection = dbInstance.collection(dbCollection);
+  const collection = dbInstance.collection(dbCollection);
   // Find some documents
   collection.find(filter).toArray(function(err, result) {
     if (err) {
@@ -56,8 +62,17 @@ function find(filter = {}, dbCollection, callback) {
   });
 }
 
+// Example usage: createTextIndex('messages', {queue: 'text'});
+function createTextIndex(dbCollection, config) {
+  // Get the documents collection
+  const collection = dbInstance.collection(dbCollection);
+
+  collection.createIndex(config);
+}
+
 module.exports = {
   insert,
   update,
-  find
+  find,
+  createTextIndex
 }
