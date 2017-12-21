@@ -1,0 +1,17 @@
+[
+  {
+    "name": "email@hospitalmail.com",
+    "number": "+54094509405",
+    "title": "Doctor"
+  },
+  {
+    "name": "email@itsupport.com",
+    "number": "+646300471954",
+    "title": "IT support"
+  },
+  {
+    "name": "email@asst.com",
+    "number": "+764914975339",
+    "title": "Office assistant"
+  }
+]
