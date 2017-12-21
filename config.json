@@ -1,5 +1,5 @@
 {
   "mongo": "mongodb://localhost:27017/medexQ",
-  "tokenExpiration": 120000,
+  "tokenExpiration": 600000,
   "messagesPageSize": 5
 }

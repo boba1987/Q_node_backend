@@ -17,11 +17,12 @@ function insert(data, dbCollection, callback) {
       if (callback) {
         callback(result);
       }
+      db.close();
     });
   });
 }
 
-// Update database entry
+// Update database entries
 function update(filter, data, dbCollection, callback) {
   // Use connect method to connect to the Server
   MongoClient.connect(url, function(err, db) {
@@ -35,6 +36,7 @@ function update(filter, data, dbCollection, callback) {
       if (callback) {
         callback(docs);
       }
+      db.close();
     });
   });
 }
@@ -47,7 +49,6 @@ function update(filter, data, dbCollection, callback) {
   });
 **/
 function find(filter = {}, dbCollection, callback) {
-  console.log(dbCollection);
   // Use connect method to connect to the Server
   MongoClient.connect(url, function(err, db) {
     // Get the collection
@@ -61,6 +62,28 @@ function find(filter = {}, dbCollection, callback) {
       if (callback) {
         callback(result);
       }
+      db.close();
+    });
+  });
+}
+
+// Find one document in db
+/**
+  Example usage with text search:
+  find({id: 1}, 'admins', function(doc){
+    console.log(doc);
+  });
+**/
+function findOne(filter, options = {}, dbCollection, callback) {
+  // Use connect method to connect to the Server
+  MongoClient.connect(url, function(err, db) {
+    // Get the collection
+    const collection = db.collection(dbCollection);
+    collection.findOne(filter, options).then(function(doc) {
+      if(callback) {
+        callback(doc)
+      }
+      db.close();
     });
   });
 }
@@ -73,6 +96,7 @@ function createTextIndex(dbCollection, config) {
     const collection = db.collection(dbCollection);
 
     collection.createIndex(config);
+    db.close();
   });
 }
 
@@ -80,5 +104,6 @@ module.exports = {
   insert,
   update,
   find,
+  findOne,
   createTextIndex
 }
