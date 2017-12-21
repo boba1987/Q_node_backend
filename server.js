@@ -1,15 +1,17 @@
 const config = require('./config.json');
+const appPort = 3000;
 
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const appPort = 3000;
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const validate = require('jsonschema').Validator;
+const v = new validate();
 
 const passportSettings = require('./authentication/index.js');
-const jwt = require('jsonwebtoken');
-
 const mongo = require('./mongo');
+const loginSchema = require('./schemas/login.json');
 
 passport.use(passportSettings.strategy);
 
@@ -68,27 +70,31 @@ app
 
 // POST routes
 app.post('/login', function(req, res) {
-  if(req.body.name && req.body.password){
-    var name = req.body.name;
-    var password = req.body.password;
+  let validation = v.validate(req.body, loginSchema).errors;
+  if(validation.length != 0){
+
+    for (let i=0; i<validation.length; i++) { // Remove unnececary properties from error message
+      delete validation[i].instance;
+      delete validation[i].schemal
+    }
+    return res.status(400).json({message: validation})
   }
 
   // Get the users
-  mongo.findOne({name}, {}, 'users', function(user) {
+  mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
     if( ! user ){
       res.status(401).json({message: 'User name or password does not match'});
     }
 
-    if(user.password === password) {
+    if(user.password === req.body.password) {
       // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-      var uidPayload = {name: user.name, role: user.role};
-      var token = jwt.sign(uidPayload, passportSettings.jwtOptions.secretOrKey);
+      var token = jwt.sign({name: user.name, role: user.role}, passportSettings.jwtOptions.secretOrKey);
       // Save token to the token store
       const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
-      mongo.update({name: uidPayload.name}, {$set: {auth: tokenObj}}, 'users', function(){
-        mongo.findOne({name}, {}, 'users', function(user) {
+      mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
+        mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
           res.json(user);
         });
       })
