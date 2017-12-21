@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const validate = require('jsonschema').Validator;
-const v = new validate();
+const validator = new validate();
 
 const passportSettings = require('./authentication/index.js');
 const mongo = require('./mongo');
@@ -70,7 +70,7 @@ app
 
 // POST routes
 app.post('/login', function(req, res) {
-  let validation = v.validate(req.body, loginSchema).errors;
+  let validation = validator.validate(req.body, loginSchema).errors;
   if(validation.length != 0){ // Validate body of the request
     for (let i=0; i<validation.length; i++) {
       // Remove unnececary properties from error message
