@@ -4,40 +4,39 @@ const config = require('../config.json');
 // Connection URL
 const url = config.mongo;
 
+let dbConnection;
+
+// Use connect method to connect to the Server
+MongoClient.connect(url, function(err, db) {
+  dbConnection = db;
+});
+
 // Inset into database
 function insert(data, dbCollection, callback) {
-  // Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    // Get the collection
-    const collection = db.collection(dbCollection);
-    // Insert provided document/s
-    collection.insertMany([
-      data
-    ], function(err, result) {
-      if (callback) {
-        callback(result);
-      }
-      db.close();
-    });
+  // Get the collection
+  const collection = dbConnection.collection(dbCollection);
+  // Insert provided document/s
+  collection.insertMany([
+    data
+  ], function(err, result) {
+    if (callback) {
+      callback(result);
+    }
   });
 }
 
 // Update database entries
 function update(filter, data, dbCollection, callback) {
-  // Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    const collection = db.collection(dbCollection);
-    // Update provided document/s
-    collection.updateMany(filter, data, function(err, docs) {
-      if (err) {
-        console.log('Find error: ', err);
-      }
+  const collection = dbConnection.collection(dbCollection);
+  // Update provided document/s
+  collection.updateMany(filter, data, function(err, docs) {
+    if (err) {
+      console.log('Find error: ', err);
+    }
 
-      if (callback) {
-        callback(docs);
-      }
-      db.close();
-    });
+    if (callback) {
+      callback(docs);
+    }
   });
 }
 
@@ -49,21 +48,16 @@ function update(filter, data, dbCollection, callback) {
   });
 **/
 function find(filter = {}, dbCollection, callback) {
-  // Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    // Get the collection
-    // Get the documents collection
-    const collection = db.collection(dbCollection);
-    // Find some documents
-    collection.find(filter).toArray(function(err, result) {
-      if (err) {
-        console.log('Find error: ', err);
-      }
-      if (callback) {
-        callback(result);
-      }
-      db.close();
-    });
+  // Get the documents collection
+  const collection = dbConnection.collection(dbCollection);
+  // Find some documents
+  collection.find(filter).toArray(function(err, result) {
+    if (err) {
+      console.log('Find error: ', err);
+    }
+    if (callback) {
+      callback(result);
+    }
   });
 }
 
@@ -75,29 +69,21 @@ function find(filter = {}, dbCollection, callback) {
   });
 **/
 function findOne(filter, options = {}, dbCollection, callback) {
-  // Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    // Get the collection
-    const collection = db.collection(dbCollection);
-    collection.findOne(filter, options).then(function(doc) {
-      if(callback) {
-        callback(doc)
-      }
-      db.close();
-    });
+  // Get the collection
+  const collection = dbConnection.collection(dbCollection);
+  collection.findOne(filter, options).then(function(doc) {
+    if(callback) {
+      callback(doc)
+    }
   });
 }
 
 // Example usage: createTextIndex('messages', {queue: 'text'});
 function createTextIndex(dbCollection, config) {
-  // Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    // Get the documents collection
-    const collection = db.collection(dbCollection);
+  // Get the documents collection
+  const collection = dbConnection.collection(dbCollection);
 
-    collection.createIndex(config);
-    db.close();
-  });
+  collection.createIndex(config);
 }
 
 module.exports = {
