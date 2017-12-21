@@ -9,6 +9,7 @@ let dbConnection;
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, db) {
   dbConnection = db;
+  createTextIndex('messages', {queue: 'text', message: 'text'});
 });
 
 // Inset into database
