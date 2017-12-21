@@ -75,7 +75,7 @@ app.post('/login', function(req, res) {
 
     for (let i=0; i<validation.length; i++) { // Remove unnececary properties from error message
       delete validation[i].instance;
-      delete validation[i].schemal
+      delete validation[i].schema;
     }
     return res.status(400).json({message: validation})
   }
