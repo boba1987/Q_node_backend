@@ -29,44 +29,41 @@ app.listen(appPort, function () {
   console.log('App is running on port:', appPort);
 });
 
+// GET routes generic resolve function
+function resolveGet(req, res, collection) {
+  const skip = 0 || (parseInt(req.query.page) - 1) * config.pageSize; // Zero based, page number starts at 1
+  const limit = config.pageSize;
+  let totalPages = 0;
+  function callback(docs) {
+    res.json({
+      totalPages: Math.ceil(totalPages/config.pageSize),
+      items: docs
+    });
+  }
+
+  // Get total number of pages
+  mongo.find({}, collection, function(docs) {
+    totalPages = docs.length;
+    mongo.find({}, collection, callback, skip, limit);
+  });
+}
+
 // GET routes
 app
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
-    const skip = 0 || (parseInt(req.query.page) - 1) * config.messagesPageSize; // Zero based, page number starts at 1
-    const limit = config.messagesPageSize;
-    let totalPages = 0;
-    function callback(docs) {
-      res.json({
-        totalPages: Math.ceil(totalPages/config.messagesPageSize),
-        items: docs
-      });
-    }
-
-    // Get total number of pages
-    mongo.find({}, 'messages', function(docs) {
-      totalPages = docs.length;
-      mongo.find({}, 'messages', callback, skip, limit);
-    });
+    resolveGet(req, res, 'messages');
   })
   .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
-    mongo.find({}, 'alerts', function(docs) {
-      res.json(docs);
-    })
+    resolveGet(req, res, 'alerts');
   })
   .get('/queues', passport.authenticate('jwt', { session: false }), function(req, res){
-    mongo.find({}, 'queues', function(docs) {
-      res.json(docs);
-    })
+    resolveGet(req, res, 'queues');
   })
   .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){
-    mongo.find({}, 'subscribers', function(docs) {
-      res.json(docs);
-    })
+    resolveGet(req, res, 'subscribers');
   })
   .get('/users', passport.authenticate('jwt', { session: false }), function(req, res){
-    mongo.find({}, 'users', function(docs) {
-      res.json(docs);
-    })
+    resolveGet(req, res, 'users');
   })
 
 // POST routes
