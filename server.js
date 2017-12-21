@@ -26,12 +26,31 @@ app.listen(appPort, function () {
 
 // GET routes
 app
-  .get('/secret', passport.authenticate('jwt', { session: false }), function(req, res){
-    res.json('Success! You can not see this without a token');
-  })
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
-    res.send(200);
-  });
+    mongo.find({}, 'messages', function(docs) {
+      res.json(docs);
+    })
+  })
+  .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
+    mongo.find({}, 'alerts', function(docs) {
+      res.json(docs);
+    })
+  })
+  .get('/queues', passport.authenticate('jwt', { session: false }), function(req, res){
+    mongo.find({}, 'queues', function(docs) {
+      res.json(docs);
+    })
+  })
+  .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){
+    mongo.find({}, 'subscribers', function(docs) {
+      res.json(docs);
+    })
+  })
+  .get('/users', passport.authenticate('jwt', { session: false }), function(req, res){
+    mongo.find({}, 'users', function(docs) {
+      res.json(docs);
+    })
+  })
 
 // POST routes
 app.post('/login', function(req, res) {
