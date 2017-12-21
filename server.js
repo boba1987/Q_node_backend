@@ -19,6 +19,11 @@ app
     extended: true
   }))
   .use(bodyParser.json()) // Parse application/json
+  .use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
 
 app.listen(appPort, function () {
   console.log('App is running on port:', appPort);
