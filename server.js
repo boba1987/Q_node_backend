@@ -71,9 +71,9 @@ app
 // POST routes
 app.post('/login', function(req, res) {
   let validation = v.validate(req.body, loginSchema).errors;
-  if(validation.length != 0){
-
-    for (let i=0; i<validation.length; i++) { // Remove unnececary properties from error message
+  if(validation.length != 0){ // Validate body of the request
+    for (let i=0; i<validation.length; i++) {
+      // Remove unnececary properties from error message
       delete validation[i].instance;
       delete validation[i].schema;
     }
