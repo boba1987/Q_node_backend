@@ -24,7 +24,7 @@ app.listen(appPort, function () {
   console.log('App is running on port:', appPort);
 });
 
-// Get routes
+// GET routes
 app
   .get('/secret', passport.authenticate('jwt', { session: false }), function(req, res){
     res.json('Success! You can not see this without a token');
@@ -33,6 +33,7 @@ app
     res.send(200);
   });
 
+// POST routes
 app.post('/login', function(req, res) {
   if(req.body.name && req.body.password){
     var name = req.body.name;
