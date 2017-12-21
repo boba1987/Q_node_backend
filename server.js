@@ -65,22 +65,22 @@ app.post('/login', function(req, res) {
   }
 
   // Get the users
-  mongo.findOne({name}, {}, 'admins', function(user) {
+  mongo.findOne({name}, {}, 'users', function(user) {
     if( ! user ){
       res.status(401).json({message: 'User name or password does not match'});
     }
 
     if(user.password === password) {
       // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-      var uidPayload = {id: user.id};
+      var uidPayload = {name: user.name, role: user.role};
       var token = jwt.sign(uidPayload, passportSettings.jwtOptions.secretOrKey);
       // Save token to the token store
       const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
-      mongo.update(uidPayload, {$set: {auth: tokenObj}}, 'admins', function(){
-        mongo.findOne({name}, {}, 'admins', function(user) {
-          res.json({user});
+      mongo.update({name: uidPayload.name}, {$set: {auth: tokenObj}}, 'users', function(){
+        mongo.findOne({name}, {}, 'users', function(user) {
+          res.json(user);
         });
       })
     } else {

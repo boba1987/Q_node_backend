@@ -12,7 +12,7 @@ const jwtOptions = {
 
 const strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   // usually this would be a database call:
-  mongo.findOne({id: jwt_payload.id}, {}, 'admins', function(user) {
+  mongo.findOne({id: jwt_payload.name}, {}, 'users', function(user) {
     if (user && user.auth.expiration > new Date().getTime()) {
       next(null, user);
     } else {
