@@ -2,19 +2,16 @@
   {
     "name": "email@hospitalmail.com",
     "number": "+54094509405",
-    "title": "Doctor",
-    "time": 1513855220287,
+    "title": "Doctor"
   },
   {
     "name": "email@itsupport.com",
     "number": "+646300471954",
-    "title": "IT support",
-    "time": 1513823220287,
+    "title": "IT support"
   },
   {
     "name": "email@asst.com",
     "number": "+764914975339",
-    "title": "Office assistant",
-    "time": 1513845220287,
+    "title": "Office assistant"
   }
 ]
