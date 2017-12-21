@@ -95,6 +95,12 @@ app.post('/login', function(req, res) {
       // Atthach token to a user
       mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
         mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
+          // Delete redundant properties
+          delete user.auth.time;
+          delete user.auth._id;
+          delete user.auth.expiration;
+          delete user.auth.user;
+
           res.json(user);
         });
       })
