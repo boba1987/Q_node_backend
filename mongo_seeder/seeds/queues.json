@@ -2,19 +2,19 @@
   {
     "name": "@cardiologist",
     "description": "The group is intended for on-call cardiologists",
-    "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
+    "time": 1513813220287,
     "owner": "+23838283834"
   },
   {
     "name": "@pediatrics",
     "description": "The group is intended for on-call pediatrics",
-    "time": "Tue Dec 18 2017 22:05:00 GMT+0100 (CET)",
+    "time": 1513822220287,
     "owner": "+23812352593"
   },
   {
     "name": "@oncologist",
     "description": "The group is intended for on-call oncologists",
-    "time": "Tue Dec 18 2017 21:55:11 GMT+0100 (CET)",
+    "time": 1513913220287,
     "owner": "+23843536835"
   }
 ]
