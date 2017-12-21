@@ -33,12 +33,12 @@ app.listen(appPort, function () {
 
 // GET routes generic resolve function
 function resolveGet(req, res, collection) {
-  const skip = 0 || (parseInt(req.query.page) - 1) * config.pageSize; // Zero based, page number starts at 1
-  const limit = config.pageSize;
+  let pageSize = parseInt(req.query.pageSize) || config.pageSize;
+  const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
   let totalPages = 0;
   function callback(docs) {
     res.json({
-      totalPages: Math.ceil(totalPages/config.pageSize),
+      totalPages: Math.ceil(totalPages/pageSize),
       items: docs
     });
   }
@@ -46,7 +46,7 @@ function resolveGet(req, res, collection) {
   // Get total number of pages
   mongo.find({}, collection, function(docs) {
     totalPages = docs.length;
-    mongo.find({}, collection, callback, skip, limit);
+    mongo.find({}, collection, callback, skip, pageSize);
   });
 }
 
