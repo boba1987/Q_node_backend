@@ -41,8 +41,7 @@ app.post('/login', function(req, res) {
   }
 
   // Get the users
-  mongo.find({name}, 'admins', function(users) {
-    const user = users[0];
+  mongo.findOne({name}, {}, 'admins', function(user) {
     if( ! user ){
       res.status(401).json({message: 'User name or password does not match'});
     }
@@ -56,8 +55,8 @@ app.post('/login', function(req, res) {
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
       mongo.update(uidPayload, {$set: {auth: tokenObj}}, 'admins', function(){
-        mongo.find({name}, 'admins', function(users) {
-          res.json({user: users[0]});
+        mongo.findOne({name}, {}, 'admins', function(user) {
+          res.json({user});
         });
       })
     } else {
