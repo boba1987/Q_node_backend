@@ -47,11 +47,12 @@ function update(filter, data, dbCollection, callback) {
     console.log(docs);
   });
 **/
-function find(filter = {}, dbCollection, callback) {
+function find(filter = {}, dbCollection, callback, skip = 0, limit = 0) {
   // Get the documents collection
   const collection = dbConnection.collection(dbCollection);
+
   // Find some documents
-  collection.find(filter).toArray(function(err, result) {
+  collection.find(filter).skip(skip).limit(limit).toArray(function(err, result) {
     if (err) {
       console.log('Find error: ', err);
     }

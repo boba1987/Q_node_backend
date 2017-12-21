@@ -32,9 +32,21 @@ app.listen(appPort, function () {
 // GET routes
 app
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
+    const skip = 0 || (parseInt(req.query.page) - 1) * config.messagesPageSize; // Zero based, page number starts at 1
+    const limit = config.messagesPageSize;
+    let totalPages = 0;
+    function callback(docs) {
+      res.json({
+        totalPages: Math.ceil(totalPages/config.messagesPageSize),
+        items: docs
+      });
+    }
+
+    // Get total number of pages
     mongo.find({}, 'messages', function(docs) {
-      res.json(docs);
-    })
+      totalPages = docs.length;
+      mongo.find({}, 'messages', callback, skip, limit);
+    });
   })
   .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
     mongo.find({}, 'alerts', function(docs) {
