@@ -25,7 +25,7 @@ app
   .use(bodyParser.json()) // Parse application/json
   .use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
   });
 
@@ -89,7 +89,7 @@ app.post('/login', function(req, res) {
     return res.status(400).json({message: validation})
   }
 
-  // Get the users
+  // Get the user
   mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
     if( ! user ){
       res.status(401).json({message: 'User name or password does not match'});
@@ -97,12 +97,12 @@ app.post('/login', function(req, res) {
 
     if(user.password === req.body.password) {
       // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-      var token = jwt.sign({name: user.name, role: user.role}, passportSettings.jwtOptions.secretOrKey);
+      var token = jwt.sign(user, passportSettings.jwtOptions.secretOrKey);
       // Save token to the token store
       const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
-      mongo.update({name: user.name}, {$set: {auth: {token: tokenObj.token}}}, 'users', function(){
+      mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
         mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, auth: 1}}, 'users', function(user) {
           res.json(user);
         });
