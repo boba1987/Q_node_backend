@@ -90,7 +90,7 @@ app.post('/login', function(req, res) {
   }
 
   // Get the user
-  mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
+  mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, password: 1}}, 'users', function(user) {
     if( ! user ){
       res.status(401).json({message: 'User name or password does not match'});
     }
@@ -103,7 +103,7 @@ app.post('/login', function(req, res) {
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
       mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
-        mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, auth: 1}}, 'users', function(user) {
+        mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
           res.json(user);
         });
       })
