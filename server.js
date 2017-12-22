@@ -43,9 +43,10 @@ app
           queues.map(queue => {
             if (message.queue == queue.name) {
               message.subscribers = queue.subscribers;
-              queue.messages.map(queueMessage => {
-                if (message.responseFrom.indexOf(queueMessage.sender) == -1 ) {
-                  message.responseFrom.push(queueMessage.sender);
+              console.log(queue.responseFrom);
+              queue.responseFrom.map(replied => {
+                if (message.responseFrom.indexOf(replied) == -1 ) {
+                  message.responseFrom.push(replied);
                 }
               })
             }
