@@ -40,11 +40,10 @@ app
       mongo.find({}, 'queues', function(queues) {
         messages.items.map(message => { // Enhance each messsage with number of subscribers
           message.responseFrom = [];
-          queues.map(queue => {
+          queues.map(queue => { // Map trough queues to attahch subscribers to response and attach whoever replied
             if (message.queue == queue.name) {
               message.subscribers = queue.subscribers;
-              console.log(queue.responseFrom);
-              queue.responseFrom.map(replied => {
+              queue.responseFrom.map(replied => { // Attach whoever replied
                 if (message.responseFrom.indexOf(replied) == -1 ) {
                   message.responseFrom.push(replied);
                 }
@@ -103,14 +102,8 @@ app.post('/login', function(req, res) {
       const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
       mongo.insert(tokenObj, 'token_store' );
       // Atthach token to a user
-      mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
-        mongo.findOne({name: req.body.name}, {}, 'users', function(user) {
-          // Delete redundant properties
-          delete user.auth.time;
-          delete user.auth._id;
-          delete user.auth.expiration;
-          delete user.auth.user;
-
+      mongo.update({name: user.name}, {$set: {auth: {token: tokenObj.token}}}, 'users', function(){
+        mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, auth: 1}}, 'users', function(user) {
           res.json(user);
         });
       })
