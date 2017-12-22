@@ -53,7 +53,7 @@ function find(filter = {}, dbCollection, callback, skip = 0, limit = 0) {
   const collection = dbConnection.collection(dbCollection);
 
   // Find some documents
-  collection.find(filter).skip(skip).limit(limit).toArray(function(err, result) {
+  collection.find(filter).sort({_id:-1}).skip(skip).limit(limit).toArray(function(err, result) {
     if (err) {
       console.log('Find error: ', err);
     }

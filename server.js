@@ -37,7 +37,23 @@ app.listen(appPort, function () {
 app
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
     resolver.resolveGet(req, 'messages').then(messages => {
-      res.send(messages);
+      mongo.find({}, 'queues', function(queues) {
+        messages.items.map(message => { // Enhance each messsage with number of subscribers
+          message.responseFrom = [];
+          queues.map(queue => {
+            if (message.queue == queue.name) {
+              message.subscribers = queue.subscribers;
+              queue.messages.map(queueMessage => {
+                if (message.responseFrom.indexOf(queueMessage.sender) == -1 ) {
+                  message.responseFrom.push(queueMessage.sender);
+                }
+              })
+            }
+          })
+        })
+
+        res.send(messages);
+      })
     });
   })
   .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
