@@ -3,18 +3,21 @@
     "name": "@cardiologist",
     "description": "The group is intended for on-call cardiologists",
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
-    "owner": "+23838283834"
+    "owner": "+23838283834",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978", "+842829623409"]
   },
   {
     "name": "@pediatrics",
     "description": "The group is intended for on-call pediatrics",
     "time": "Tue Dec 18 2017 22:05:00 GMT+0100 (CET)",
-    "owner": "+23812352593"
+    "owner": "+23812352593",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978"]
   },
   {
     "name": "@oncologist",
     "description": "The group is intended for on-call oncologists",
     "time": "Tue Dec 18 2017 21:55:11 GMT+0100 (CET)",
-    "owner": "+23843536835"
+    "owner": "+23843536835",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978", "+842829623409", "+81239785813"]
   }
 ]

@@ -9,8 +9,10 @@ const jwt = require('jsonwebtoken');
 const validate = require('jsonschema').Validator;
 const validator = new validate();
 
-const passportSettings = require('./authentication/index.js');
+const passportSettings = require('./authentication');
 const mongo = require('./mongo');
+const resolver = require('./resolver');
+
 const loginSchema = require('./schemas/login.json');
 
 passport.use(passportSettings.strategy);
@@ -31,41 +33,32 @@ app.listen(appPort, function () {
   console.log('App is running on port:', appPort);
 });
 
-// GET routes generic resolve function
-function resolveGet(req, res, collection) {
-  let pageSize = parseInt(req.query.pageSize) || config.pageSize;
-  const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
-  let totalPages = 0;
-  function callback(docs) {
-    res.json({
-      totalPages: Math.ceil(totalPages/pageSize),
-      items: docs
-    });
-  }
-
-  // Get total number of pages
-  mongo.find({}, collection, function(docs) {
-    totalPages = docs.length;
-    mongo.find({}, collection, callback, skip, pageSize);
-  });
-}
-
 // GET routes
 app
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
-    resolveGet(req, res, 'messages');
+    resolver.resolveGet(req, 'messages').then(messages => {
+      res.send(messages);
+    });
   })
   .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
-    resolveGet(req, res, 'alerts');
+    resolver.resolveGet(req, 'alerts').then(alerts => {
+      res.send(alerts);
+    });
   })
   .get('/queues', passport.authenticate('jwt', { session: false }), function(req, res){
-    resolveGet(req, res, 'queues');
+    resolver.resolveGet(req, 'queues').then(queues => {
+      res.send(queues);
+    });
   })
   .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){
-    resolveGet(req, res, 'subscribers');
+    resolver.resolveGet(req, 'subscribers').then(subscribers => {
+      res.send(subscribers);
+    });
   })
   .get('/users', passport.authenticate('jwt', { session: false }), function(req, res){
-    resolveGet(req, res, 'users');
+    resolver.resolveGet(req, 'users').then(users => {
+      res.send(users);
+    });
   })
 
 // POST routes
