@@ -67,7 +67,7 @@ app
     });
   })
   .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of subscribers
-    resolver.resolveGet(req, 'subscribers').then(subscribers => {
+    resolver.resolveGet(req, 'subscribers', {status: req.query.status}).then(subscribers => {
       res.send(subscribers);
     });
   })
