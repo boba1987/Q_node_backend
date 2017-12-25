@@ -5,7 +5,7 @@ const validator = require('../validator');
 function create(req, res) {
   const deferred = new Q.defer();
   const v = validator.isValid(req, res, createUserSchema); // Validate request
-  if (v) {
+  if (v) { // Reject if request is not valid - some field must be missing or invlaid type
     deferred.reject(v);
   } else {
     deferred.resolve();
