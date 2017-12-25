@@ -18,7 +18,7 @@ function resolveGet(req, collection, filter = {}) {
   // Get total number of pages
   mongo.find(filter, collection, function(docs) {
     totalPages = docs.length;
-    mongo.find(filter, collection, callback, skip, pageSize);
+    mongo.find(filter, collection, callback, skip, pageSize); // Get only filtered documents
   });
 
   return deferred.promise;
