@@ -11,6 +11,7 @@ const passportSettings = require('./authentication');
 const mongo = require('./mongo');
 const resolver = require('./resolver');
 const userManagement = require('./user_management');
+const messages = require('./messages');
 
 const loginSchema = require('./schemas/login.json');
 const validator = require('./validator');
@@ -36,25 +37,9 @@ app.listen(appPort, function () {
 // GET routes
 app
   .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of messages
-    resolver.resolveGet(req, 'messages').then(messages => {
-      mongo.find({}, 'queues', function(queues) {
-        messages.items.map(message => { // Enhance each messsage with number of subscribers
-          message.responseFrom = [];
-          queues.map(queue => { // Map trough queues to attahch subscribers to response and attach whoever replied
-            if (message.queue == queue.name) {
-              message.subscribers = queue.subscribers;
-              queue.responseFrom.map(replied => { // Attach whoever replied
-                if (message.responseFrom.indexOf(replied) == -1 ) {
-                  message.responseFrom.push(replied);
-                }
-              })
-            }
-          })
-        })
-
-        res.send(messages);
-      })
-    });
+    messages.getMessages(req).then((messages) => {
+      res.send(messages);
+    })
   })
   .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of alerts
     resolver.resolveGet(req, 'alerts').then(alerts => {
