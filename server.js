@@ -101,11 +101,11 @@ app
         // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
         var token = jwt.sign(user, passportSettings.jwtOptions.secretOrKey);
         // Save token to the token store
-        const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
+        const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + config.tokenExpiration};
         mongo.insert(tokenObj, 'token_store' );
         // Atthach token to a user
         mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
-          mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
+          mongo.findOne({name: req.body.name}, {fields: {_id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
             res.json(user);
           });
         })

@@ -1,13 +1,11 @@
 [
   {
-    "id": 1,
     "name": "mail@hospital.com",
     "number": "+375389348595",
     "password": "medex",
     "role": "admin"
   },
   {
-    "id": 2,
     "name": "email@hospitalmail.com",
     "number": "+54094509405",
     "password": "medex",
@@ -15,7 +13,6 @@
     "title": "Doctor"
   },
   {
-    "id": 3,
     "name": "email@itsupport.com",
     "number": "+646300471954",
     "password": "medex",
@@ -23,7 +20,6 @@
     "title": "IT support"
   },
   {
-    "id": 4,
     "name": "email@asst.com",
     "number": "+764914975339",
     "password": "medex",
