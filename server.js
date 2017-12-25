@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 const passportSettings = require('./authentication');
 const mongo = require('./mongo');
 const resolver = require('./resolver');
-const user_management = require('./user_management');
+const userManagement = require('./user_management');
 
 const loginSchema = require('./schemas/login.json');
 const validator = require('./validator');
@@ -112,5 +112,12 @@ app
       } else {
         res.status(401).json({message: 'User name or password does not match'});
       }
+    });
+  })
+  .post('/createUser', function(req, res) {
+    userManagement.create(req, res).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.send(err);
     });
   })

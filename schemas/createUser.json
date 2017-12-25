@@ -6,7 +6,7 @@
     "password": {"type": "string"},
     "userName": {"type": "string"},
     "userEmail": {"type": "string"},
-    "occupation": {"type": "string"},
+    "occupation": {"type": "string"}
   },
   "required": ["name", "password", "userName", "userEmail", "occupation"]
 }
