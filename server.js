@@ -76,6 +76,11 @@ app
       res.send(users);
     });
   })
+  .get('/messages/queue/:name', passport.authenticate('jwt', {session: false}), function(req, res){ // Get messages per queue
+    mongo.find({queue: req.params.name}, 'messages', function(messages) {
+      res.send(messages);
+    })
+  });
 
 // POST routes
 app.post('/login', function(req, res) {
