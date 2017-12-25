@@ -6,14 +6,14 @@ const app = express();
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const validate = require('jsonschema').Validator;
-const validator = new validate();
 
 const passportSettings = require('./authentication');
 const mongo = require('./mongo');
 const resolver = require('./resolver');
+const user_management = require('./user_management');
 
 const loginSchema = require('./schemas/login.json');
+const validator = require('./validator');
 
 passport.use(passportSettings.strategy);
 
@@ -83,37 +83,34 @@ app
   });
 
 // POST routes
-app.post('/login', function(req, res) {
-  let validation = validator.validate(req.body, loginSchema).errors;
-  if(validation.length != 0){ // Validate body of the request
-    for (let i=0; i<validation.length; i++) {
-      // Remove unnececary properties from error message
-      delete validation[i].instance;
-      delete validation[i].schema;
-    }
-    return res.status(400).json({message: validation})
-  }
+app
+  .post('/login', function(req, res) {
+    const v = validator.isValid(req, res, loginSchema);
 
-  // Get the user
-  mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, password: 1}}, 'users', function(user) {
-    if( ! user ){
-      res.status(401).json({message: 'User name or password does not match'});
+    if (v) {
+      return res.status(400).json({message: v});
     }
 
-    if(user.password === req.body.password) {
-      // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-      var token = jwt.sign(user, passportSettings.jwtOptions.secretOrKey);
-      // Save token to the token store
-      const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
-      mongo.insert(tokenObj, 'token_store' );
-      // Atthach token to a user
-      mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
-        mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
-          res.json(user);
-        });
-      })
-    } else {
-      res.status(401).json({message: 'User name or password does not match'});
-    }
-  });
-});
+    // Get the user
+    mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, password: 1}}, 'users', function(user) {
+      if( ! user ){
+        res.status(401).json({message: 'User name or password does not match'});
+      }
+
+      if(user.password === req.body.password) {
+        // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
+        var token = jwt.sign(user, passportSettings.jwtOptions.secretOrKey);
+        // Save token to the token store
+        const tokenObj = {token, time: new Date().getTime(), user: user.id, expiration: new Date().getTime() + config.tokenExpiration};
+        mongo.insert(tokenObj, 'token_store' );
+        // Atthach token to a user
+        mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
+          mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
+            res.json(user);
+          });
+        })
+      } else {
+        res.status(401).json({message: 'User name or password does not match'});
+      }
+    });
+  })
