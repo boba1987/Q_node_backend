@@ -3,7 +3,7 @@ const mongo = require('../mongo');
 const Q = require('Q');
 
 // GET routes generic resolve function
-function resolveGet(req, collection) {
+function resolveGet(req, collection, filter = {}) {
   const deferred = Q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
@@ -16,9 +16,9 @@ function resolveGet(req, collection) {
   }
 
   // Get total number of pages
-  mongo.find({}, collection, function(docs) {
+  mongo.find(filter, collection, function(docs) {
     totalPages = docs.length;
-    mongo.find({}, collection, callback, skip, pageSize);
+    mongo.find(filter, collection, callback, skip, pageSize);
   });
 
   return deferred.promise;
