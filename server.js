@@ -35,7 +35,7 @@ app.listen(appPort, function () {
 
 // GET routes
 app
-  .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){
+  .get('/messages', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of messages
     resolver.resolveGet(req, 'messages').then(messages => {
       mongo.find({}, 'queues', function(queues) {
         messages.items.map(message => { // Enhance each messsage with number of subscribers
@@ -56,22 +56,22 @@ app
       })
     });
   })
-  .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){
+  .get('/alerts', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of alerts
     resolver.resolveGet(req, 'alerts').then(alerts => {
       res.send(alerts);
     });
   })
-  .get('/queues', passport.authenticate('jwt', { session: false }), function(req, res){
+  .get('/queues', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of queues
     resolver.resolveGet(req, 'queues').then(queues => {
       res.send(queues);
     });
   })
-  .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){
+  .get('/subscribers', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of subscribers
     resolver.resolveGet(req, 'subscribers').then(subscribers => {
       res.send(subscribers);
     });
   })
-  .get('/users', passport.authenticate('jwt', { session: false }), function(req, res){
+  .get('/users', passport.authenticate('jwt', { session: false }), function(req, res){ // Get list of users
     resolver.resolveGet(req, 'users').then(users => {
       res.send(users);
     });
