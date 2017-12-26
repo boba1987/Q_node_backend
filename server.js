@@ -80,5 +80,11 @@ app
     });
   })
   .post('/forgotPassword', (req, res) => {
-    res.sendStatus(200);
+    mongo.findOne({email: req.body.email}, {}, 'users', (user) => {
+      if (user) {
+        return res.sendStatus(200);
+      }
+
+      res.status(400).send({message: 'Email not found'});
+    })
   })
