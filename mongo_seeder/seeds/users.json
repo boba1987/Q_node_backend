@@ -1,12 +1,14 @@
 [
   {
     "name": "mail@hospital.com",
+    "email": "mail@hospital.com",
     "number": "+375389348595",
     "password": "medex",
     "role": "admin"
   },
   {
     "name": "email@hospitalmail.com",
+    "email": "email@hospitalmail.com",
     "number": "+54094509405",
     "password": "medex",
     "role": "moderator",
@@ -14,6 +16,7 @@
   },
   {
     "name": "email@itsupport.com",
+    "email": "email@itsupport.com",
     "number": "+646300471954",
     "password": "medex",
     "role": "moderator",
@@ -21,6 +24,7 @@
   },
   {
     "name": "email@asst.com",
+    "email": "email@asst.com",
     "number": "+764914975339",
     "password": "medex",
     "role": "moderator",
