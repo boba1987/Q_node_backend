@@ -7,7 +7,7 @@ function create(req) {
   const deferred = new Q.defer();
   const v = validator.isValid(req, createUserSchema); // Validate request
   if (v) { // Reject if request is not valid - some field must be missing or invlaid type
-    deferred.reject(v);
+    deferred.reject({message: v});
   } else {
     // Check if user already exists
     mongo.findOne({$or: [{username: req.body.username}, {email: req.body.email}]}, {_id: 0, username: 1, email: 1}, 'users', function(doc) {

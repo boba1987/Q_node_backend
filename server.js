@@ -76,6 +76,6 @@ app
     userManagement.create(req, res).then(() => {
       res.sendStatus(200);
     }).catch(err => {
-      res.status(400).json(err.message);
+      res.status(400).send(err);
     });
   })
