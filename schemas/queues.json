@@ -1,0 +1,9 @@
+{
+  "id": "/queues",
+  "type": "object",
+  "properties": {
+    "_id": {"type": "string"},
+    "active": {"type": "string"}
+  },
+  "required": ["_id", "active"]
+}
