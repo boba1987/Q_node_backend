@@ -3,6 +3,7 @@
     "queue": "@oncologist",
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
     "sender": "+23838283834",
+    "mail": "mail@mai.com",
     "message": "This is a list of duty hours, please check and and confitm DOB.",
     "alert": "Message sent to an emnty queue."
   },
@@ -10,6 +11,7 @@
     "queue": "@cardiologist",
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
     "sender": "+23838283834",
+    "mail": "email@mail.com",
     "message": "Meeting in 10 mins.",
     "alert": "Queue has no subscibers."
   }
