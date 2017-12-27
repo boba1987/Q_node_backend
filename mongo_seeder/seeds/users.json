@@ -12,7 +12,7 @@
     "number": "+54094509405",
     "password": "medex",
     "role": "moderator",
-    "title": "Doctor"
+    "occupation": "Doctor"
   },
   {
     "name": "email@itsupport.com",
@@ -20,7 +20,7 @@
     "number": "+646300471954",
     "password": "medex",
     "role": "moderator",
-    "title": "IT support"
+    "occupation": "IT support"
   },
   {
     "name": "email@asst.com",
@@ -28,6 +28,6 @@
     "number": "+764914975339",
     "password": "medex",
     "role": "moderator",
-    "title": "Office assistant"
+    "occupation": "Office assistant"
   }
 ]
