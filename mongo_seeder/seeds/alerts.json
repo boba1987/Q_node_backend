@@ -5,7 +5,7 @@
     "sender": "+23838283834",
     "mail": "mail@mai.com",
     "message": "This is a list of duty hours, please check and and confitm DOB.",
-    "alert": "Message sent to an emnty queue.",
+    "alert": "Message sent to an empty queue.",
     "messageId": "5a43c84e5bea65180ac99b97"
   },
   {
