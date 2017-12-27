@@ -106,9 +106,8 @@ app
     if (v) {// Validate request
       return res.status(400).send({message: v});
     }
-
+    // Extract token from authorization header and find a user to update the password
     mongo.findOne({'auth.token': req.headers.authorization.split(' ')[1]}, {}, 'users', (user) => {
-      console.log(user);
       if (user) {
         if (user.password == req.body.oldPassword) {
           return mongo.update({_id: user._id}, {$set: {password: req.body.newPassword}}, 'users', () => {
