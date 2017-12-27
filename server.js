@@ -10,6 +10,7 @@ const mongo = require('./mongo');
 const resolver = require('./resolver');
 const userManagement = require('./user_management');
 const messages = require('./messages');
+const alerts = require('./alerts');
 
 passport.use(authentication.strategy);
 
@@ -94,5 +95,19 @@ app
       res.sendStatus(200);
     }).catch((err) => {
       res.status(err.status).send({message: err.message});
+    })
+  })
+  .post('/alerts/sendMail', passport.authenticate('jwt', {session: false}), (req, res) => {
+    alerts.sendMail(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(400).send({message: err.message})
+    })
+  })
+  .post('/alerts/sendSms', passport.authenticate('jwt', {session: false}), (req, res) => {
+    alerts.sendSms(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(err.status).send({message: err.message})
     })
   })
