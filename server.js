@@ -48,7 +48,11 @@ app
     });
   })
   .get('/subscribers', passport.authenticate('jwt', { session: false }), (req, res) => { // Get list of subscribers
-    resolver.resolveGet(req, 'subscribers', {status: req.query.status}).then(subscribers => {
+    let filter = {};
+    if (req.query.status) {
+      filter = {status: req.query.status};
+    }
+    resolver.resolveGet(req, 'subscribers', filter).then(subscribers => {
       res.send(subscribers);
     });
   })
