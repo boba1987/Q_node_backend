@@ -1,13 +1,13 @@
 [
   {
-    "name": "mail@hospital.com",
+    "name": "Bernard Eich",
     "email": "mail@hospital.com",
     "number": "+375389348595",
     "password": "medex",
     "role": "admin"
   },
   {
-    "name": "email@hospitalmail.com",
+    "name": "John Doe",
     "email": "email@hospitalmail.com",
     "number": "+54094509405",
     "password": "medex",
@@ -15,7 +15,7 @@
     "occupation": "Doctor"
   },
   {
-    "name": "email@itsupport.com",
+    "name": "Jack Jonson",
     "email": "email@itsupport.com",
     "number": "+646300471954",
     "password": "medex",
@@ -23,7 +23,7 @@
     "occupation": "IT support"
   },
   {
-    "name": "email@asst.com",
+    "name": "Doug DeMouro",
     "email": "email@asst.com",
     "number": "+764914975339",
     "password": "medex",
