@@ -98,3 +98,16 @@ app
       res.status(400).send({message: 'Email not found'});
     })
   })
+  .post('/passwordChange', passport.authenticate('jwt', {session: false}), (req, res) => {
+    mongo.findOne({'auth.token': req.headers.authorization.split(' ')[1]}, {}, 'users', (user) => {
+      console.log(user.password);
+      console.log(req.body.oldPassword);
+      if (user.password == req.body.oldPassword) {
+        mongo.update({_id: user._id}, {$set: {password: req.body.newPassword}}, 'users', () => {
+          res.sendStatus(200);
+        })
+      } else {
+          res.status(400).send({message: 'Incorrect password'});
+      }
+    });
+  })
