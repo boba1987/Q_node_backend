@@ -26,7 +26,11 @@ function insert(data, dbCollection, callback) {
   });
 }
 
-// Update database entries
+/**
+  Update database entries
+  Example usage:
+  mongo.update({_id: user._id}, {$set: {password: tempPassword}}, 'users', callback());
+**/
 function update(filter, data, dbCollection, callback) {
   const collection = dbConnection.collection(dbCollection);
   // Update provided document/s
