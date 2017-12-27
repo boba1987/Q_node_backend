@@ -4,6 +4,7 @@ const mongo = require('../mongo/index.js');
 const config = require('../config.json');
 const jwt = require('jsonwebtoken');
 const loginSchema = require('../schemas/login.json');
+const passwordChangeSchema = require('../schemas/passwordChange.json');
 const validator = require('../validator');
 const Q = require('Q');
 const utils = require('../utils');
@@ -84,8 +85,33 @@ function forgotPassword(req) {
   return deferred.promise;
 }
 
+function passwordChange(req) {
+  const deferred = Q.defer();
+  const v = validator.isValid(req, passwordChangeSchema); // Validate request
+
+  if (v) {// Validate request
+    deferred.reject({status: 400, message: v});
+  } else {
+    // Extract token from authorization header and find a user to update the password
+    mongo.findOne({'auth.token': req.headers.authorization.split(' ')[1]}, {}, 'users', (user) => {
+      if (user) {
+        if (user.password == req.body.oldPassword) {
+          return mongo.update({_id: user._id}, {$set: {password: req.body.newPassword}}, 'users', () => {
+            deferred.resolve();
+          })
+        }
+      }
+
+      deferred.reject({status: 400, message: 'Incorrect password'});
+    });
+  }
+
+  return deferred.promise;
+}
+
 module.exports = {
   strategy,
   login,
-  forgotPassword
+  forgotPassword,
+  passwordChange
 };

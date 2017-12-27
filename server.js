@@ -10,9 +10,6 @@ const mongo = require('./mongo');
 const resolver = require('./resolver');
 const userManagement = require('./user_management');
 const messages = require('./messages');
-const validator = require('./validator');
-
-const passwordChangeSchema = require('./schemas/passwordChange.json');
 
 passport.use(authentication.strategy);
 
@@ -93,21 +90,9 @@ app
     })
   })
   .post('/passwordChange', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const v = validator.isValid(req, passwordChangeSchema); // Validate request
-
-    if (v) {// Validate request
-      return res.status(400).send({message: v});
-    }
-    // Extract token from authorization header and find a user to update the password
-    mongo.findOne({'auth.token': req.headers.authorization.split(' ')[1]}, {}, 'users', (user) => {
-      if (user) {
-        if (user.password == req.body.oldPassword) {
-          return mongo.update({_id: user._id}, {$set: {password: req.body.newPassword}}, 'users', () => {
-            res.sendStatus(200);
-          })
-        }
-      }
-
-      res.status(400).send({message: 'Incorrect password'});
-    });
+    authentication.passwordChange(req).then(() => {
+      res.sendStatus(200);
+    }).catch((err) => {
+      res.status(err.status).send({message: err.message});
+    })
   })
