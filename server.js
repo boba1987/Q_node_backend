@@ -10,7 +10,6 @@ const mongo = require('./mongo');
 const resolver = require('./resolver');
 const userManagement = require('./user_management');
 const messages = require('./messages');
-const utils = require('./utils');
 const validator = require('./validator');
 
 const passwordChangeSchema = require('./schemas/passwordChange.json');
@@ -87,16 +86,9 @@ app
     });
   })
   .post('/forgotPassword', (req, res) => {
-    mongo.findOne({email: req.body.email}, {}, 'users', (user) => {
-      if (user) {
-        let tempPassword = utils.makeRandomHash(5);
-        mongo.update({_id: user._id}, {$set: {password: tempPassword}}, 'users', () => {
-          // TODO: send an email to a user with generated tempPassword
-          console.log(tempPassword);
-        })
-        return res.sendStatus(200);
-      }
-
+    authentication.forgotPassword(req).then(() => {
+      res.sendStatus(200);
+    }).catch(() => {
       res.status(400).send({message: 'Email not found'});
     })
   })

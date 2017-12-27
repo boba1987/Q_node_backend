@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const loginSchema = require('../schemas/login.json');
 const validator = require('../validator');
 const Q = require('Q');
+const utils = require('../utils');
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
@@ -65,7 +66,26 @@ function login(req) {
   return deferred.promise;
 }
 
+function forgotPassword(req) {
+  const deferred = Q.defer();
+  mongo.findOne({email: req.body.email}, {}, 'users', (user) => {
+    if (user) {
+      let tempPassword = utils.makeRandomHash(5);
+      mongo.update({_id: user._id}, {$set: {password: tempPassword}}, 'users', () => {
+        // TODO: send an email to a user with generated tempPassword
+        console.log(tempPassword);
+      })
+      return deferred.resolve();
+    }
+
+    deferred.reject();
+  });
+
+  return deferred.promise;
+}
+
 module.exports = {
   strategy,
-  login
+  login,
+  forgotPassword
 };
