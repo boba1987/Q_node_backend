@@ -11,6 +11,7 @@ const resolver = require('./resolver');
 const userManagement = require('./user_management');
 const messages = require('./messages');
 const alerts = require('./alerts');
+const queues = require('./queues');
 
 passport.use(authentication.strategy);
 
@@ -106,6 +107,13 @@ app
   })
   .post('/alerts/sendSms', passport.authenticate('jwt', {session: false}), (req, res) => {
     alerts.sendSms(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(err.status).send({message: err.message})
+    })
+  })
+  .post('/queues/editStatus', passport.authenticate('jwt', {session: false}), (req, res) => {
+    queues.editStatus(req).then(() => {
       res.sendStatus(200);
     }).catch(err => {
       res.status(err.status).send({message: err.message})
