@@ -51,6 +51,7 @@ function login(req) {
         mongo.insert(tokenObj, 'token_store' );
         // Atthach token to a user
         mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
+          // Extract JWT and find a user
           mongo.findOne({name: req.body.name}, {fields: {_id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
             deferred.resolve(user);
           });
