@@ -1,5 +1,9 @@
 ## MedxQ application back-end
 
+### Requirements:
+1. node v7.*
+2. mongo 3.*
+
 ### Running the project:
 1. clone the project
 2. run `npm i`
