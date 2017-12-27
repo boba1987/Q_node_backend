@@ -10,6 +10,7 @@ const mongo = require('./mongo');
 const resolver = require('./resolver');
 const userManagement = require('./user_management');
 const messages = require('./messages');
+const utils = require('./utils');
 
 
 passport.use(authentication.strategy);
@@ -86,6 +87,11 @@ app
   .post('/forgotPassword', (req, res) => {
     mongo.findOne({email: req.body.email}, {}, 'users', (user) => {
       if (user) {
+        let tempPassword = utils.makeRandomHash(5);
+        mongo.update({_id: user._id}, {$set: {password: tempPassword}}, 'users', () => {
+          // TODO: send an email to a user with generated tempPassword
+          console.log(tempPassword);
+        })
         return res.sendStatus(200);
       }
 
