@@ -1,0 +1,13 @@
+{
+  "id": "/alerts",
+  "type": "object",
+  "properties": {
+    "queue": {"type": "string"},
+    "sender": {"type": "string"},
+    "mail": {"type": "string"},
+    "alert": {"type": "string"},
+    "_id": {"type": "string"},
+    "messageId": {"type": "string"}
+  },
+  "required": ["queue", "sender", "mail", "alert", "_id", "messageId"]
+}
