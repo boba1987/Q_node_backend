@@ -1,9 +1,23 @@
 {
-  "id": "/queues",
-  "type": "object",
-  "properties": {
-    "_id": {"type": "string"},
-    "active": {"type": "string"}
+  "editStatus": {
+    "id": "/editStatus",
+    "type": "object",
+    "properties": {
+      "_id": {"type": "string"},
+      "active": {"type": "string"}
+    },
+    "required": ["_id", "active"]
   },
-  "required": ["_id", "active"]
+  "create": {
+    "id": "/create",
+    "type": "object",
+    "properties": {
+      "queueName": {"type": "string"},
+      "@queue": {"type": "string"},
+      "ownerNumber": {"type": "string"},
+      "queueType": {"type": "string"},
+      "queueEscalation": {"type": "string"},
+      "description": {"type": "string"}
+    }
+  }
 }

@@ -2,6 +2,7 @@ const Q = require('Q');
 const validator = require('../validator');
 const queuesSchema = require('../schemas/queues.json');
 const mongo = require('../mongo');
+const MongoDB = require('mongodb');
 
 function editStatus(req) {
   const deferred = Q.defer();
@@ -18,6 +19,15 @@ function editStatus(req) {
   return deferred.promise;
 }
 
+function create(req) {
+  const deferred = Q.defer();
+  console.log(req.body);
+  deferred.resolve();
+
+  return deferred.promise;
+}
+
 module.exports = {
-  editStatus
+  editStatus,
+  create
 }
