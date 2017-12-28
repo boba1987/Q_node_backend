@@ -1,33 +1,38 @@
 [
   {
     "name": "Bernard Eich",
-    "email": "mail@hospital.com",
-    "number": "+375389348595",
     "password": "medex",
+    "email": "mail@hospital.com",
+    "occupation": "Admin",
+    "number": "+375389348595",
+    "username" : "Admin",
     "role": "admin"
   },
   {
     "name": "John Doe",
-    "email": "email@hospitalmail.com",
-    "number": "+54094509405",
     "password": "medex",
-    "role": "moderator",
-    "occupation": "Doctor"
+    "email": "email@hospitalmail.com",
+    "occupation": "Doctor",
+    "number": "+54094509405",
+    "username" : "jdoe",
+    "role": "moderator"
   },
   {
     "name": "Jack Jonson",
-    "email": "email@itsupport.com",
-    "number": "+646300471954",
     "password": "medex",
-    "role": "moderator",
-    "occupation": "IT support"
+    "email": "email@itsupport.com",
+    "occupation": "IT support",
+    "number": "+646300471954",
+    "username" : "jjonson",
+    "role": "moderator"
   },
   {
     "name": "Doug DeMouro",
-    "email": "email@asst.com",
-    "number": "+764914975339",
     "password": "medex",
-    "role": "moderator",
-    "occupation": "Office assistant"
+    "email": "email@asst.com",
+    "occupation": "Office assistant",
+    "number": "+764914975339",
+    "username" : "ddemouro",
+    "role": "moderator"
   }
 ]
