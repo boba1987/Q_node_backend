@@ -5,12 +5,12 @@ const mongo = require('../mongo');
 
 function editStatus(req) {
   const deferred = Q.defer();
-  const v = validator.isValid(req, queuesSchema); // Validate request
+  const v = validator.isValid(req, queuesSchema.editStatus); // Validate request
 
   if (v) {
     deferred.reject({status: 400, message: v});
   } else {
-    mongo.update({_id: req.body._id}, {$set: {active: req.body.active}}, 'queues', () => {
+    mongo.update({_id: new MongoDB.ObjectID(req.body._id)}, {$set: {active: JSON.parse(req.body.active) }}, 'queues', () => {
       deferred.resolve();
     })
   }
