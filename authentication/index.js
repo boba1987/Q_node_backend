@@ -19,7 +19,7 @@ const jwtOptions = {
 
 const strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   // usually this would be a database call:
-  mongo.findOne({name: jwt_payload.name}, {}, 'users', function(user) {
+  mongo.findOne({email: jwt_payload.email}, {}, 'users', function(user) {
     if (!user.auth) { // If no token expiration
       return next(null, false);
     }
@@ -40,26 +40,26 @@ function login(req) {
     deferred.reject({message: v, status: 400});
   } else {
     // Get the user
-    mongo.findOne({name: req.body.name}, {fields: {_id: 0, id: 1, name: 1, password: 1}}, 'users', function(user) {
+    mongo.findOne({email: req.body.email}, {fields: {_id: 1, password: 1, email: 1, role: 1}}, 'users', function(user) {
       if( ! user ){
-        deferred.reject({message: 'User name or password does not match', status: 401});
+        deferred.reject({message: 'User email or password does not match', status: 401});
       }
 
       if(user.password === req.body.password) {
         // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-        var token = jwt.sign(user, secretKey.key);
+        var token = jwt.sign({email: user.email, role: user.role}, secretKey.key);
         // Save token to the token store
         const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + config.tokenExpiration};
         mongo.insert(tokenObj, 'token_store' );
         // Atthach token to a user
-        mongo.update({name: user.name}, {$set: {auth: tokenObj}}, 'users', function(){
+        mongo.update({_id: user._id}, {$set: {auth: tokenObj}}, 'users', function(){
           // Extract JWT and find a user
-          mongo.findOne({name: req.body.name}, {fields: {_id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
+          mongo.findOne({email: req.body.email}, {fields: {_id: 1, name: 1, number: 1, role: 1, 'auth.token': 1}}, 'users', function(user) {
             deferred.resolve(user);
           });
         })
       } else {
-        return deferred.reject({message: 'User name or password does not match', status: 401});
+        return deferred.reject({message: 'User email or password does not match', status: 401});
       }
     });
   }
