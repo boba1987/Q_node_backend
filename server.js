@@ -79,49 +79,49 @@ app
   })
   .post('/createUser', passport.authenticate('jwt', {session: false}), (req, res) => {
     userManagement.create(req, res).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(400).send(err);
     });
   })
   .post('/forgotPassword', (req, res) => {
     authentication.forgotPassword(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(() => {
       res.status(400).send({message: 'Email not found'});
     })
   })
   .post('/passwordChange', passport.authenticate('jwt', {session: false}), (req, res) => {
     authentication.passwordChange(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch((err) => {
       res.status(err.status).send({message: err.message});
     })
   })
   .post('/alerts/sendMail', passport.authenticate('jwt', {session: false}), (req, res) => {
     alerts.sendMail(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(400).send({message: err.message})
     })
   })
   .post('/alerts/sendSms', passport.authenticate('jwt', {session: false}), (req, res) => {
     alerts.sendSms(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })
   })
   .post('/queues/editStatus', passport.authenticate('jwt', {session: false}), (req, res) => {
     queues.editStatus(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })
   })
   .post('/queues/create', passport.authenticate('jwt', {session: false}), (res, req) => {
     queues.create(req).then(() => {
-      res.sendStatus(200);
+      res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })
