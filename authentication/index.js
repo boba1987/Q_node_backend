@@ -20,7 +20,7 @@ const jwtOptions = {
 const strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   // usually this would be a database call:
   mongo.findOne({email: jwt_payload.email}, {}, 'users', function(user) {
-    if (!user.auth) { // If no token expiration
+    if (!user || !user.auth) { // If no token expiration
       return next(null, false);
     }
 
