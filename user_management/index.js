@@ -12,6 +12,8 @@ function create(req) {
     // Check if user already exists
     mongo.findOne({$or: [{username: req.body.username}, {email: req.body.email}]}, {_id: 0, username: 1, email: 1}, 'users', function(doc) {
       if (!doc) {
+        // Enhance req.body with role filed
+        req.body.role = 'moderator';
         mongo.insert(req.body, 'users', function() {
           deferred.resolve();
         });
