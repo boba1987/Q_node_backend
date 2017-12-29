@@ -54,7 +54,7 @@ function login(req) {
         // Atthach token to a user
         mongo.update({_id: user._id}, {$set: {auth: tokenObj}}, 'users', function(){
           // Extract JWT and find a user
-          mongo.findOne({email: req.body.email}, {fields: {'auth.time': 0, 'auth.expiration': 0, 'auth.user': 0}}, 'users', function(user) {
+          mongo.findOne({email: req.body.email}, {fields: {'auth.time': 0, 'auth.expiration': 0, 'auth.user': 0, password: 0}}, 'users', function(user) {
             deferred.resolve(user);
           });
         })
