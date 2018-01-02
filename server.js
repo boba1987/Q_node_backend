@@ -69,7 +69,7 @@ app
   })
   .get('/hospital/details', (req, res) => {
     mongo.find({}, 'hospital_details', (details) => {
-      res.send(details);
+      res.send(details[0]);
     })
   })
 
@@ -144,8 +144,8 @@ app.
   .put('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
     mongo.drop('hospital_details', () => {
       setTimeout(function () {
-        mongo.insert(req.body, 'hospital_details', () => {
-          res.status(200).send({status: 'ok'});
+        mongo.insert(req.body, 'hospital_details', (doc) => {
+          res.status(200).send(doc.ops[0]);
         })
       });
     })

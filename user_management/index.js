@@ -52,7 +52,7 @@ function edit(req) {
           number: req.body.number,
           username: req.body.username,
           role: req.body.role
-          }}, 'users', (res) => {
+          }}, 'users', () => {
             deferred.resolve();
         })
       }
