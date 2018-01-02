@@ -136,3 +136,13 @@ app
       res.status(200).send({status: 'ok'});
     })
   })
+
+// App PUT routes
+app.
+  put('/users/edit', passport.authenticate('jwt', {session: false}), (req, res) => {
+    userManagement.edit(req).then(() => {
+      res.status(200).send({status: 'ok'});
+    }).catch(err => {
+      res.status(err.status).send({message: err.message})
+    })
+  });

@@ -25,7 +25,6 @@ function create(req) {
         } else {
           deferred.reject();
         }
-
       }
     });
   }
@@ -33,4 +32,34 @@ function create(req) {
   return deferred.promise;
 }
 
-module.exports = {create}
+function edit(req) {
+  const deferred = new Q.defer();
+  const v = validator.isValid(req, createUserSchema); // Validate request
+  if (v) { // Reject if request is not valid - some field must be missing or invlaid type
+    deferred.reject({message: v, status: 400});
+  } else {
+    // Check if user exists
+    mongo.findOne({email: req.body.email}, {}, 'users', function(doc) {
+      if (!doc) {
+        // User is not found
+        deferred.reject({message: 'User not found!'});
+      } else {
+        mongo.update({email: req.body.email},
+          {$set: {name: req.body.name,
+          password: req.body.password,
+          email: req.body.email,
+          occupation: req.body.occupation,
+          number: req.body.number,
+          username: req.body.username,
+          role: req.body.role
+          }}, 'users', (res) => {
+            deferred.resolve();
+        })
+      }
+    });
+  }
+
+  return deferred.promise;
+}
+
+module.exports = {create, edit}
