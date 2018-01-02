@@ -66,7 +66,12 @@ app
     mongo.find({queue: req.params.name}, 'messages', (messages) => {
       res.send(messages);
     })
-  });
+  })
+  .get('/hospital/details', (req, res) => {
+    mongo.find({}, 'hospital_details', (details) => {
+      res.send(details);
+    })
+  })
 
 // POST routes
 app
@@ -119,10 +124,15 @@ app
       res.status(err.status).send({message: err.message})
     })
   })
-  .post('/queues/create', passport.authenticate('jwt', {session: false}), (res, req) => {
+  .post('/queues/create', passport.authenticate('jwt', {session: false}), (req, res) => {
     queues.create(req).then(() => {
       res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(err.status).send({message: err.message})
+    })
+  })
+  .post('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
+    mongo.insert(req.body, 'hospital_details', () => {
+      res.status(200).send({status: 'ok'});
     })
   })
