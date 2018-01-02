@@ -92,10 +92,17 @@ function createTextIndex(dbCollection, config) {
   collection.createIndex(config);
 }
 
+function drop(dbCollection, callback) {
+  let collection = dbConnection.collection(dbCollection);
+  console.log('droping');
+  collection.drop(callback());
+}
+
 module.exports = {
   insert,
   update,
   find,
   findOne,
-  createTextIndex
+  createTextIndex,
+  drop
 }

@@ -131,11 +131,6 @@ app
       res.status(err.status).send({message: err.message})
     })
   })
-  .post('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
-    mongo.insert(req.body, 'hospital_details', () => {
-      res.status(200).send({status: 'ok'});
-    })
-  })
 
 // App PUT routes
 app.
@@ -145,4 +140,13 @@ app.
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })
-  });
+  })
+  .put('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
+    mongo.drop('hospital_details', () => {
+      setTimeout(function () {
+        mongo.insert(req.body, 'hospital_details', () => {
+          res.status(200).send({status: 'ok'});
+        })
+      });
+    })
+  })
