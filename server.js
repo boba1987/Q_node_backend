@@ -125,8 +125,8 @@ app
     })
   })
   .post('/queues/create', passport.authenticate('jwt', {session: false}), (req, res) => {
-    queues.create(req).then(() => {
-      res.status(200).send({status: 'ok'});
+    queues.create(req).then((doc) => {
+      res.send(doc);
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })

@@ -3,6 +3,7 @@ const validator = require('../validator');
 const queuesSchema = require('../schemas/queues.json');
 const mongo = require('../mongo');
 const MongoDB = require('mongodb');
+const formidable = require('formidable');
 
 function editStatus(req) {
   const deferred = Q.defer();
@@ -21,8 +22,18 @@ function editStatus(req) {
 
 function create(req) {
   const deferred = Q.defer();
-  console.log(req.body);
-  deferred.resolve();
+  const form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    const v = validator.isValid(fields, queuesSchema.create); // Validate request
+    if (v) {
+      deferred.reject({status: 400, message: v});
+    } else {
+      mongo.insert(fields, 'queues', (res) => {
+        deferred.resolve(res.ops[0]);
+      })
+    }
+  });
 
   return deferred.promise;
 }

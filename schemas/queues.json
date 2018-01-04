@@ -18,6 +18,7 @@
       "queueType": {"type": "string"},
       "queueEscalation": {"type": "string"},
       "description": {"type": "string"}
-    }
+    },
+    "required": ["queueName", "@queue", "ownerNumber", "queueType", "queueEscalation", "description"]
   }
 }
