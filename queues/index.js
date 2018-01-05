@@ -39,47 +39,43 @@ function create(req) {
   form.uploadDir = './tmp';
 
   form.parse(req, function (err, fields, files) {
-    if (Object.keys(files).length) {
-      let queue = [];
+    let queue = [];
+    for (let key in files) {
+      // Check if file is type 'text/csv'
+      if (files[key].type != 'text/csv') {
+        deferred.reject({status: 400, message: 'File ' + files[key].name + ' is not type of csv! Plese, upload csv format file.' });
+      } else {
+        queue.push(parser.csv(files[key].path));
+        // Remove file from ./tmp
+        fs.unlinkSync('./' + files[key].path);
+      }
+    }
+
+    Q.all(
+      queue
+    ).then(parsed => {
+      let index = 0;
       for (let key in files) {
-        // Check if file is type 'text/csv'
-        if (files[key].type != 'text/csv') {
-          deferred.reject({status: 400, message: 'File ' + files[key].name + ' is not type of csv! Plese, upload csv format file.' });
-        } else {
-          queue.push(parser.csv(files[key].path));
-          // Remove file from ./tmp
-          fs.unlinkSync('./' + files[key].path);
-        }
+        fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
+        index++;
       }
 
-      Q.all(
-        queue
-      ).then(parsed => {
-        let index = 0;
-        for (let key in files) {
-          fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
-          index++;
-        }
-
-        save(fields, deferred);
-      }).catch( err =>{
-        deferred.reject({status: err.status, message: err.message});
-      });
-    } else {
-      if (fields.allowedNumbersToSend) {
+      if (typeof fields.allowedNumbersToSend == 'string') {
         fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
         });
       }
 
-      if (fields.allowedNumbersToSubscribe) {
+      if (typeof fields.allowedNumbersToSubscribe == 'string') {
         fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
         });
       }
 
       save(fields, deferred);
-    }
+    }).catch( err =>{
+      deferred.reject({status: err.status, message: err.message});
+    });
   });
 
   return deferred.promise;
