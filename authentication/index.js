@@ -2,6 +2,7 @@ const passportJWT = require('passport-jwt');
 const secretKey = {
   key: 'd192491c0425f117b4c434f9adad48b6d5973542e0187897df3128e38ea23ac7efb656ed386d5e845171f61e051504e7a17fa7eddaaa2eb1c7f3599119cd130f'
 };
+
 const mongo = require('../mongo/index.js');
 const config = require('../config.json');
 const jwt = require('jsonwebtoken');
