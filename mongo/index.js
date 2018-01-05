@@ -8,6 +8,7 @@ let dbConnection;
 
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, db) {
+  if (err) console.log(err);
   dbConnection = db;
   createTextIndex('messages', {queue: 'text', message: 'text'});
 });
