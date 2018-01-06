@@ -48,8 +48,9 @@ function login(req) {
       if(user.password === req.body.password) {
         // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
         var token = jwt.sign({email: user.email, role: user.role}, secretKey.key);
+        let tokenExpiration = config.tokenExpiration || 60000000;
         // Save token to the token store
-        const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + config.tokenExpiration};
+        const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + tokenExpiration};
         mongo.insert(tokenObj, 'token_store' );
         // Atthach token to a user
         mongo.update({_id: user._id}, {$set: {auth: tokenObj}}, 'users', function(){
