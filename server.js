@@ -5,6 +5,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
+const fs = require('fs');
+
 const authentication = require('./authentication');
 const mongo = require('./mongo');
 const resolver = require('./resolver');
@@ -12,6 +14,7 @@ const userManagement = require('./user_management');
 const messages = require('./messages');
 const alerts = require('./alerts');
 const queues = require('./queues');
+const config = require('./config.json');
 
 passport.use(authentication.strategy);
 
@@ -68,8 +71,10 @@ app
     })
   })
   .get('/hospital/details', (req, res) => {
-    mongo.find({}, 'hospital_details', (details) => {
-      res.send(details[0]);
+    res.send({
+      hospitalName: config.hospitalName,
+      email: config.email,
+      telephone: config.telephone
     })
   })
 
@@ -131,22 +136,22 @@ app
       res.status(err.status).send({message: err.message})
     })
   })
-
-// App PUT routes
-app.
-  put('/users/edit', passport.authenticate('jwt', {session: false}), (req, res) => {
+  .post('/users/edit', passport.authenticate('jwt', {session: false}), (req, res) => {
     userManagement.edit(req).then(() => {
       res.status(200).send({status: 'ok'});
     }).catch(err => {
       res.status(err.status).send({message: err.message})
     })
   })
-  .put('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
-    mongo.drop('hospital_details', () => {
-      setTimeout(function () {
-        mongo.insert(req.body, 'hospital_details', (doc) => {
-          res.status(200).send(doc.ops[0]);
-        })
-      });
-    })
+  .post('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
+    config.hospitalName = req.body.hospitalName;
+    config.telephone = req.body.telephone;
+    config.email = req.body.email;
+    fs.writeFileSync('./config.json', JSON.stringify(config));
+
+    res.send({
+      hospitalName: config.hospitalName,
+      telephone: config.telephone,
+      email: config.email
+    });
   })
