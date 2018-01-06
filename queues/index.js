@@ -55,10 +55,16 @@ function create(req) {
       queue
     ).then(parsed => {
       let index = 0;
+
       for (let key in files) {
         fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
         index++;
       }
+
+      // Enhabce fields object with arrays to contain status, responseFrom and subscribers
+      fields.responseFrom = [];
+      fields.subscribers = [];
+      fields.active = false;
 
       if (typeof fields.allowedNumbersToSend == 'string') {
         fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
@@ -67,7 +73,7 @@ function create(req) {
       }
 
       if (typeof fields.allowedNumbersToSubscribe == 'string') {
-        fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
+        fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
           return item.trim();
         });
       }
