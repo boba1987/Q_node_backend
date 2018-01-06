@@ -95,7 +95,6 @@ function createTextIndex(dbCollection, config) {
 
 function drop(dbCollection, callback) {
   let collection = dbConnection.collection(dbCollection);
-  console.log('droping');
   collection.drop(callback());
 }
 
