@@ -24,6 +24,7 @@ app
     extended: true
   }))
   .use(bodyParser.json()) // Parse application/json
+  .use(bodyParser.text())
   .use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -144,9 +145,10 @@ app
     })
   })
   .post('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
-    config.hospitalName = req.body.hospitalName;
-    config.telephone = req.body.telephone;
-    config.email = req.body.email;
+    let request = JSON.parse(req.body);
+    config.hospitalName = request.hospitalName;
+    config.telephone = request.telephone;
+    config.email = request.email;
     fs.writeFileSync('./config.json', JSON.stringify(config));
 
     res.send({
