@@ -1,4 +1,4 @@
-const Q = require('Q');
+const q = require('q');
 const validator = require('../validator');
 const queuesSchema = require('../schemas/queues.json');
 const mongo = require('../mongo');
@@ -8,7 +8,7 @@ const parser = require('../parser');
 const fs = require('fs');
 
 function editStatus(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const v = validator.isValid(req, queuesSchema.editStatus); // Validate request
 
   if (v) {
@@ -34,7 +34,7 @@ function save(fields, deferred) {
 }
 
 function create(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const form = new formidable.IncomingForm();
   form.uploadDir = './tmp';
 
@@ -51,7 +51,7 @@ function create(req) {
       }
     }
 
-    Q.all(
+    q.all(
       queue
     ).then(parsed => {
       let index = 0;

@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const loginSchema = require('../schemas/login.json');
 const passwordChangeSchema = require('../schemas/passwordChange.json');
 const validator = require('../validator');
-const Q = require('Q');
+const q = require('q');
 const utils = require('../utils');
 
 const ExtractJwt = passportJWT.ExtractJwt;
@@ -33,7 +33,7 @@ const strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
 });
 
 function login(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const v = validator.isValid(req, loginSchema);
 
   if (v) {
@@ -69,7 +69,7 @@ function login(req) {
 }
 
 function forgotPassword(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   mongo.findOne({email: req.body.email}, {}, 'users', (user) => {
     if (user) {
       let tempPassword = utils.makeRandomHash(5);
@@ -87,7 +87,7 @@ function forgotPassword(req) {
 }
 
 function passwordChange(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const v = validator.isValid(req, passwordChangeSchema); // Validate request
 
   if (v) {// Validate request

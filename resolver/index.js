@@ -1,10 +1,10 @@
 const config = require('../config.json');
 const mongo = require('../mongo');
-const Q = require('Q');
+const q = require('q');
 
 // GET routes generic resolve function
 function resolveGet(req, collection, filter = {}, projection = {}) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
   let totalPages = 0;

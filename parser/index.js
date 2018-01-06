@@ -1,10 +1,10 @@
-const Q = require('Q');
+const q = require('q');
 const fs = require('fs');
 const parse = require('csv-parse');
 
 // GET routes generic resolve function
 function csv(path) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const fileToParse = fs.readFileSync(path, 'utf8');
 
   parse(fileToParse, {columns: true}, (err, output) => {

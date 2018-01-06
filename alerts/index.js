@@ -1,9 +1,9 @@
-const Q = require('Q');
+const q = require('q');
 const validator = require('../validator');
 const alertsSchema = require('../schemas/alerts.json');
 
 function sendMail(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const v = validator.isValid(req, alertsSchema); // Validate request
 
   if (v) {
@@ -18,7 +18,7 @@ function sendMail(req) {
 }
 
 function sendSms(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   const v = validator.isValid(req, alertsSchema); // Validate request
 
   if (v) {

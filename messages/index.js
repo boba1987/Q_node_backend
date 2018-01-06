@@ -1,9 +1,9 @@
 const resolver = require('../resolver');
 const mongo = require('../mongo');
-const Q = require('Q');
+const q = require('q');
 
 function getMessages(req) {
-  const deferred = Q.defer();
+  const deferred = q.defer();
   resolver.resolveGet(req, 'messages').then(messages => {
     mongo.find({}, 'queues', function(queues) {
       messages.items.map(message => { // Enhance each messsage with number of subscribers

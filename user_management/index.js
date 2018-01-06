@@ -1,10 +1,10 @@
-const Q = require('Q');
+const q = require('q');
 const createUserSchema = require('../schemas/createUser.json');
 const validator = require('../validator');
 const mongo = require('../mongo');
 
 function create(req) {
-  const deferred = new Q.defer();
+  const deferred = new q.defer();
   const v = validator.isValid(req, createUserSchema); // Validate request
   if (v) { // Reject if request is not valid - some field must be missing or invlaid type
     deferred.reject({message: v});
@@ -33,7 +33,7 @@ function create(req) {
 }
 
 function edit(req) {
-  const deferred = new Q.defer();
+  const deferred = new q.defer();
   const v = validator.isValid(req, createUserSchema); // Validate request
   if (v) { // Reject if request is not valid - some field must be missing or invlaid type
     deferred.reject({message: v, status: 400});
