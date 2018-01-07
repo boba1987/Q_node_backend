@@ -51,40 +51,40 @@ function create(req) {
         queue.push(parser.csv(files[key].path));
         // Remove file from ./tmp
         fs.unlinkSync('./' + files[key].path);
+
+        q.all(
+          queue
+        ).then(parsed => {
+          let index = 0;
+
+          for (let key in files) {
+            fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
+            index++;
+          }
+
+          // Enhabce fields object with arrays to contain status, responseFrom and subscribers
+          fields.responseFrom = [];
+          fields.subscribers = [];
+          fields.active = false;
+
+          if (typeof fields.allowedNumbersToSend == 'string') {
+            fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
+              return item.trim();
+            });
+          }
+
+          if (typeof fields.allowedNumbersToSubscribe == 'string') {
+            fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
+              return item.trim();
+            });
+          }
+
+          save(fields, deferred);
+        }).catch( err =>{
+          deferred.reject({status: err.status, message: err.message});
+        });
       }
     }
-
-    q.all(
-      queue
-    ).then(parsed => {
-      let index = 0;
-
-      for (let key in files) {
-        fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
-        index++;
-      }
-
-      // Enhabce fields object with arrays to contain status, responseFrom and subscribers
-      fields.responseFrom = [];
-      fields.subscribers = [];
-      fields.active = false;
-
-      if (typeof fields.allowedNumbersToSend == 'string') {
-        fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
-          return item.trim();
-        });
-      }
-
-      if (typeof fields.allowedNumbersToSubscribe == 'string') {
-        fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
-          return item.trim();
-        });
-      }
-
-      save(fields, deferred);
-    }).catch( err =>{
-      deferred.reject({status: err.status, message: err.message});
-    });
   });
 
   return deferred.promise;
