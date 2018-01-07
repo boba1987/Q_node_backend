@@ -37,6 +37,7 @@ function create(req) {
   const deferred = q.defer();
   const form = new formidable.IncomingForm();
   form.uploadDir = './tmp';
+  const allowedFileFields = ['allowedNumbersToSend', 'allowedNumbersToSubscribe'];
 
   form.parse(req, function (err, fields, files) {
     let queue = [];
@@ -44,6 +45,8 @@ function create(req) {
       // Check if file is type 'text/csv'
       if (files[key].type != 'text/csv') {
         deferred.reject({status: 400, message: 'File ' + files[key].name + ' is not type of csv! Plese, upload csv format file.' });
+      } else if ( allowedFileFields.indexOf(files[key].name)) { // If there is a file on field that is not allowed
+        deferred.reject({status: 400, message: 'Field ' + files[key].name + ' is not allowed! Allowed file fields are ' + allowedFileFields.toString() });
       } else {
         queue.push(parser.csv(files[key].path));
         // Remove file from ./tmp
