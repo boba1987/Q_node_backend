@@ -81,6 +81,14 @@ app
   })
   .get('/downloadMessagesCsv', function (req, res) {
     messages.getMessages(req).then((messages) => {
+      messages.items.map(message => {
+        if (message.responseFrom) {
+          message.responseFrom = message.responseFrom.toString();
+        }
+        if (message.subscribers) {
+          message.subscribers = message.subscribers.toString();
+        }
+      });
       json2csv({ data: messages.items, fields: ['_id', 'queueType', 'queue', 'time', 'sender', 'message', 'responseFrom', 'subscribers'] }, function(err, csv) {
         res.setHeader('Content-disposition', 'attachment; filename=data.csv');
         res.set('Content-Type', 'text/csv');

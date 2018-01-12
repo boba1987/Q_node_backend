@@ -18,7 +18,6 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   // If there is parameter "search" on the request, do text search on DB
   if (req.query.search) {
     filter['queue'] = new RegExp('.*' + req.query.search + '.*' + 'i');
-    console.log(filter);
   }
 
   // Get total number of pages
