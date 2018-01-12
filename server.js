@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const json2csv = require('json2csv');
 
 const fs = require('fs');
 
@@ -78,6 +79,15 @@ app
       telephone: config.telephone
     })
   })
+  .get('/downloadMessagesCsv', function (req, res) {
+    messages.getMessages(req).then((messages) => {
+      json2csv({ data: messages.items, fields: ['_id', 'queueType', 'queue', 'time', 'sender', 'message', 'responseFrom', 'subscribers'] }, function(err, csv) {
+        res.setHeader('Content-disposition', 'attachment; filename=data.csv');
+        res.set('Content-Type', 'text/csv');
+        res.status(200).send(csv);
+      });
+    })
+  });
 
 // POST routes
 app
