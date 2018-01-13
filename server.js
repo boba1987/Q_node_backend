@@ -99,6 +99,11 @@ app
       downloader.csv(res, ['_id', 'queue', 'sender', 'status'], subscribers);
     });
   })
+  .get('/logo', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const img = fs.readFileSync('./logo.png');
+    res.writeHead(200, {'Content-Type': 'image/png' });
+    res.end(img, 'binary');
+  })
 
 // POST routes
 app
