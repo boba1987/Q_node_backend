@@ -82,9 +82,11 @@ app
   .get('/messagesCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
     messages.getMessages(req).then((messages) => {
       messages.items.map(message => {
+        // Remove array braces and return only comma separated strings
         if (message.responseFrom) {
           message.responseFrom = message.responseFrom.toString();
         }
+        // Remove array braces and return only comma separated strings
         if (message.subscribers) {
           message.subscribers = message.subscribers.toString();
         }
