@@ -79,7 +79,7 @@ app
       telephone: config.telephone
     })
   })
-  .get('/downloadMessagesCsv', function (req, res) {
+  .get('/downloadMessagesCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
     messages.getMessages(req).then((messages) => {
       messages.items.map(message => {
         if (message.responseFrom) {
