@@ -16,6 +16,7 @@ const alerts = require('./alerts');
 const queues = require('./queues');
 const config = require('./config.json');
 const downloader = require('./downloader');
+const formidable = require('formidable');
 
 passport.use(authentication.strategy);
 
@@ -181,5 +182,26 @@ app
       hospitalName: config.hospitalName,
       telephone: config.telephone,
       email: config.email
+    });
+  })
+  .post('/logo', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const form = new formidable.IncomingForm();
+    form.uploadDir = '.';
+
+    form.parse(req, function (err, fields, files) {
+      for (let key in files) {
+        if (files[key].type != 'image/png') {
+          res.status(400).send({message: 'File ' + files[key].name + ' is not type of png! Plese, upload png format file.'});
+        } else {
+          // If file logo.png  exists delete it and replace with the new one
+          if (fs.existsSync('./logo.png')) {
+            fs.unlinkSync('./logo.png');
+          }
+
+          fs.rename('./' + files[key].path, './logo.png', () => {
+            res.sendStatus(200);
+          });
+        }
+      }
     });
   })
