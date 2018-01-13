@@ -72,7 +72,7 @@ app
       res.send(messages);
     })
   })
-  .get('/hospital/details', (req, res) => {
+  .get('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
     res.send({
       hospitalName: config.hospitalName,
       email: config.email,
