@@ -6,7 +6,8 @@
     "occupation": "Admin",
     "number": "+375389348595",
     "username" : "Admin",
-    "role": "admin"
+    "role": "admin",
+    "active": true
   },
   {
     "name": "John Doe",
@@ -15,7 +16,8 @@
     "occupation": "Doctor",
     "number": "+54094509405",
     "username" : "jdoe",
-    "role": "moderator"
+    "role": "moderator",
+    "active": true
   },
   {
     "name": "Jack Jonson",
@@ -24,7 +26,8 @@
     "occupation": "IT support",
     "number": "+646300471954",
     "username" : "jjonson",
-    "role": "moderator"
+    "role": "moderator",
+    "active": true
   },
   {
     "name": "Doug DeMouro",
@@ -33,6 +36,7 @@
     "occupation": "Office assistant",
     "number": "+764914975339",
     "username" : "ddemouro",
-    "role": "moderator"
+    "role": "moderator",
+    "active": true
   }
 ]

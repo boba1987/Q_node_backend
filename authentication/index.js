@@ -46,6 +46,10 @@ function login(req) {
       }
 
       if(user.password === req.body.password) {
+        // If user account is inactive - reject and return
+        if (!user.active) {
+          return deferred.reject({message: 'User account not active!', status: 403});
+        }
         // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
         var token = jwt.sign({email: user.email, role: user.role}, secretKey.key);
         let tokenExpiration = config.tokenExpiration || 60000000;
