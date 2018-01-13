@@ -63,7 +63,7 @@ app
     });
   })
   .get('/users', passport.authenticate('jwt', { session: false }), (req, res) => { // Get list of users
-    resolver.resolveGet(req, 'users', {}, {password: 0}).then(users => {
+    resolver.resolveGet(req, 'users').then(users => {
       res.send(users);
     });
   })
