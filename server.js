@@ -4,7 +4,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const json2csv = require('json2csv');
 
 const fs = require('fs');
 
@@ -22,9 +21,8 @@ passport.use(authentication.strategy);
 
 app
   .use(passport.initialize())
-  .use(bodyParser.urlencoded({ // Parse application/x-www-form-urlencoded
-    extended: true
-  }))
+  // Parse application/x-www-form-urlencoded
+  .use(bodyParser.urlencoded({extended: true}))
   .use(bodyParser.json()) // Parse application/json
   .use(bodyParser.text())
   .use((req, res, next) => {
