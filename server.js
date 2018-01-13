@@ -79,7 +79,7 @@ app
       telephone: config.telephone
     })
   })
-  .get('/downloadMessagesCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
+  .get('/messagesCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
     messages.getMessages(req).then((messages) => {
       messages.items.map(message => {
         if (message.responseFrom) {
@@ -95,7 +95,16 @@ app
         res.status(200).send(csv);
       });
     })
-  });
+  })
+  .get('/subscribersCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
+    resolver.resolveGet(req, 'subscribers').then(subscribers => {
+      json2csv({ data: subscribers.items, fields: ['_id', 'queue', 'sender', 'status'] }, function(err, csv) {
+        res.setHeader('Content-disposition', 'attachment; filename=data.csv');
+        res.set('Content-Type', 'text/csv');
+        res.status(200).send(csv);
+      });
+    });
+  })
 
 // POST routes
 app
