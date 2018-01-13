@@ -51,7 +51,8 @@ function edit(req) {
           occupation: req.body.occupation,
           number: req.body.number,
           username: req.body.username,
-          role: req.body.role
+          role: req.body.role,
+          active: true
           }}, 'users', () => {
             deferred.resolve();
         })
