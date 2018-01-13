@@ -16,6 +16,7 @@ const messages = require('./messages');
 const alerts = require('./alerts');
 const queues = require('./queues');
 const config = require('./config.json');
+const downloader = require('./downloader');
 
 passport.use(authentication.strategy);
 
@@ -91,20 +92,13 @@ app
           message.subscribers = message.subscribers.toString();
         }
       });
-      json2csv({ data: messages.items, fields: ['_id', 'queueType', 'queue', 'time', 'sender', 'message', 'responseFrom', 'subscribers'] }, function(err, csv) {
-        res.setHeader('Content-disposition', 'attachment; filename=data.csv');
-        res.set('Content-Type', 'text/csv');
-        res.status(200).send(csv);
-      });
+
+      downloader.csv(res, ['_id', 'queueType', 'queue', 'time', 'sender', 'message', 'responseFrom', 'subscribers'], messages);
     })
   })
   .get('/subscribersCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
     resolver.resolveGet(req, 'subscribers').then(subscribers => {
-      json2csv({ data: subscribers.items, fields: ['_id', 'queue', 'sender', 'status'] }, function(err, csv) {
-        res.setHeader('Content-disposition', 'attachment; filename=data.csv');
-        res.set('Content-Type', 'text/csv');
-        res.status(200).send(csv);
-      });
+      downloader.csv(res, ['_id', 'queue', 'sender', 'status'], subscribers);
     });
   })
 
