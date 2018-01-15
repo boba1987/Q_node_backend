@@ -40,7 +40,7 @@ function login(req) {
     deferred.reject({message: v, status: 400});
   } else {
     // Get the user
-    mongo.findOne({email: req.body.email}, {fields: {_id: 1, password: 1, email: 1, role: 1}}, 'users', function(user) {
+    mongo.findOne({email: req.body.email}, {fields: {_id: 1, password: 1, email: 1, role: 1, active: 1}}, 'users', function(user) {
       if( ! user ){
         deferred.reject({message: 'User email or password does not match', status: 401});
       }
@@ -48,10 +48,11 @@ function login(req) {
       if(user.password === req.body.password) {
         // If user account is inactive - reject and return
         if (!user.active) {
+            console.log(user);
           return deferred.reject({message: 'User account not active!', status: 403});
         }
         // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-        var token = jwt.sign({email: user.email, role: user.role}, secretKey.key);
+        var token = jwt.sign({email: user.email, role: user.role, active: user.active}, secretKey.key);
         let tokenExpiration = config.tokenExpiration || 60000000;
         // Save token to the token store
         const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + tokenExpiration};
