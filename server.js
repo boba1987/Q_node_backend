@@ -205,3 +205,12 @@ app
       }
     });
   })
+  .post('/subscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.sendStatus(200);
+  })
+  .post('/unsubscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.sendStatus(200);
+  })
+  .post('/message', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.sendStatus(200);
+  })
