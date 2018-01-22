@@ -5,7 +5,7 @@ const q = require('q');
 function getMessages(req) {
   const deferred = q.defer();
   resolver.resolveGet(req, 'messages').then(messages => {
-    mongo.find({}, 'queues', function(queues) {
+    mongo.find({}, 'queueGroups', function(queues) {
       messages.items.map(message => { // Enhance each messsage with number of subscribers
         message.responseFrom = [];
         queues.map(queue => { // Map trough queues to attahch subscribers to response and attach whoever replied
