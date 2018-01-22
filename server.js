@@ -207,8 +207,11 @@ app
     });
   })
   .post('/subscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
-    subscribers.subscribe(req);
-    res.sendStatus(200);
+    subscribers.subscribe(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(err.status).send({message: err.message});
+    });
   })
   .post('/unsubscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
     res.sendStatus(200);

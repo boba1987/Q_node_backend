@@ -1,0 +1,11 @@
+{
+  "subscribe": {
+    "id": "/subscribe",
+    "type": "object",
+    "properties": {
+      "queue": {"type": "string"},
+      "number": {"type": "string"}
+    },
+    "required": ["queue", "number"]
+  }
+}
