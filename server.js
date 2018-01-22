@@ -17,6 +17,7 @@ const queues = require('./queues');
 const config = require('./config.json');
 const downloader = require('./downloader');
 const formidable = require('formidable');
+const subscribers = require('./subscribers');
 
 passport.use(authentication.strategy);
 
@@ -206,6 +207,7 @@ app
     });
   })
   .post('/subscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
+    subscribers.subscribe(req);
     res.sendStatus(200);
   })
   .post('/unsubscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
