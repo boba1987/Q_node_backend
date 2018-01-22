@@ -1,0 +1,20 @@
+[
+  {
+    "queueType": "@cardiologist",
+    "queueGroup": "@cardiologist_19122017_0200",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978", "+842829623409"],
+    "responseFrom": ["+23812352593", "+84287483402"]
+  },
+  {
+    "queueType": "@cardiologist",
+    "queueGroup": "@pediatrics_18122017_2205",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978", "+842829623409"],
+    "responseFrom": []
+  },
+  {
+    "queueType": "@cardiologist",
+    "queueGroup": "@oncologist_10122017_1440",
+    "subscribers": ["+23812352593", "+84287483402", "+47887324978", "+842829623409"],
+    "responseFrom": ["+23812352593", "+84287483402"]
+  }
+]
