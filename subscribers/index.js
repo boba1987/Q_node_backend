@@ -14,33 +14,68 @@ function subscribe(req) {
   if (v) {
     deferred.reject({message: v, status: 400});
   } else {
-
-  }
-  mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
-    // If queue is found
-    if (queue) {
-      // Check if number is allowed to subscribe
-      if (queue.allowedToSubsribe.indexOf(req.body.number) != -1) {
-        mongo.update({queueType: req.body.queue}, {$push: {subscribed: req.body.number}}, 'queues', () => {
-          console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
+    mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
+      // If queue is found
+      if (queue) {
+        // Check if number is allowed to subscribe
+        if (queue.allowedToSubsribe.indexOf(req.body.number) != -1) {
+          // Check if allready subscribed
+          if (queue.subscribed.indexOf(req.body.number) != -1) {
+            console.log(colors.red(new Date(), req.body.number + 'is allready subscribed to ' + req.body.queue));
+            deferred.resolve();
+          } else {
+            // Subscirbe user
+            mongo.update({queueType: req.body.queue}, {$push: {subscribed: req.body.number}}, 'queues', () => {
+              console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
+              deferred.resolve();
+            });
+          }
+        } else {
+          console.log(colors.red(new Date(), req.body.number + 'is Not allowed to subscribe ' + req.body.queue));
           deferred.resolve();
-        });
+        }
       } else {
-        console.log(colors.red(new Date(), req.body.number + 'is Not allowed to subscribe ' + req.body.queue));
+        // Queue does not exists
+        console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
         deferred.resolve();
       }
-    } else {
-      // Queue does not exists
-      console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
-      deferred.resolve();
-    }
-  })
+    })
+  }
 
   return deferred.promise;
 }
 
 function unsubscribe(req) {
+  const deferred = q.defer();
+  const v = validator.isValid(req, subscribeSchema.subscribe);
 
+  // Validate request
+  if (v) {
+    deferred.reject({message: v, status: 400});
+  } else {
+    mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
+      // If queue is found
+      if (queue) {
+        // Check if is subscribed
+        if (queue.subscribed.indexOf(req.body.number) != -1) {
+          mongo.update({queueType: req.body.queue}, {$pull: {subscribed: req.body.number}}, 'queues', () => {
+            console.log(colors.green(new Date(), req.body.number + 'is unsubscribed from ' + req.body.queue));
+            deferred.resolve();
+          });
+        } else {
+          // Number is not subscribed to this queue
+          console.log(colors.red(new Date(), req.body.number + ' is not subscribed to this queue'));
+          deferred.resolve();
+        }
+      } else {
+        // Queue does not exists
+        console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
+        deferred.resolve();
+      }
+    })
+  }
+
+  return deferred.promise;
 }
 
 module.exports = {

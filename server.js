@@ -214,7 +214,11 @@ app
     });
   })
   .post('/unsubscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
-    res.sendStatus(200);
+    subscribers.unsubscribe(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(err.status).send({message: err.message});
+    });
   })
   .post('/message', passport.authenticate('jwt', {session: false}), (req, res) => {
     res.sendStatus(200);
