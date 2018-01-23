@@ -220,6 +220,10 @@ app
       res.status(err.status).send({message: err.message});
     });
   })
-  .post('/message', passport.authenticate('jwt', {session: false}), (req, res) => {
-    res.sendStatus(200);
+  .post('/message', (req, res) => {
+    messages.save(req).then(() => {
+      res.sendStatus(200);
+    }).catch(err => {
+      res.status(err.status).send({message: err.message});
+    })
   })
