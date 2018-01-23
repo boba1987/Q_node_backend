@@ -52,9 +52,22 @@ function save(req) {
   if (v) {
     deferred.reject({status: 400, message: v});
   } else {
+    let messageObj = {
+      sender: req.body.number,
+      message: req.body.message,
+      time: new Date()
+    };
     // Check for queue group name - if not found on req object, this is initial message - create new queue group
     if (req.body.queueGroup) {
-      deferred.resolve();
+      messageObj.queueGroup = req.body.queueGroup;
+      // Save messate to DB
+      mongo.insert(messageObj, 'messages', () => {
+        // TODO: send a message via bot
+        // Update respone from filed of the queue group
+        mongo.update({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
+          deferred.resolve();
+        });
+      });
     } else {
       // Get queue type
       let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
@@ -65,14 +78,8 @@ function save(req) {
           // TODO: Request the bot to create new queue group
           let queueGroupName = generateQueueGroupName(queueType);
           // Save the message to DB - collection 'messages'
-          let messageObj = {
-            sender: req.body.number,
-            message: req.body.message,
-            time: new Date(),
-            queueType,
-            queueGroup: queueGroupName
-          };
-
+          messageObj.queueGroup = queueGroupName;
+          messageObj.queueType = queueType;
           let queueGroupObj = {
             queueType,
             queueGroup: queueGroupName,
