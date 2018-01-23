@@ -3,6 +3,7 @@ const mongo = require('../mongo');
 const q = require('q');
 const messages = require('../schemas/messages.json');
 const validator = require('../validator');
+const colors = require('colors');
 
 function generateQueueGroupName(name) {
   const currDate = new Date();
@@ -73,7 +74,7 @@ function save(req) {
       // Get queue type
       let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
       // Find queue type in DB
-      mongo.find({queueType}, 'queues', (queue) => {
+      mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
         if (queue) {
           // TODO: Request the bot to create new queue group
@@ -85,7 +86,7 @@ function save(req) {
             queueType,
             queueGroup: queueGroupName,
             responseFrom: [],
-            subscribers: queue[0].allowedToSubsribe
+            subscribers: queue.allowedToSubsribe
           };
 
           mongo.insert(messageObj, 'messages', () => {
@@ -95,6 +96,10 @@ function save(req) {
               deferred.resolve();
             });
           });
+        } else {
+          // Queue not found - send the alert message via bot
+          console.log(colors.red(queueType + ' queue is not found.'));
+          deferred.resolve();
         }
       });
     }
