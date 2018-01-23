@@ -60,6 +60,7 @@ function save(req) {
     // Check for queue group name - if not found on req object, this is initial message - create new queue group
     if (req.body.queueGroup) {
       messageObj.queueGroup = req.body.queueGroup;
+      messageObj.queueType = req.body.queueGroup.substr(0, req.body.queueGroup.indexOf('_'));
       // Save messate to DB
       mongo.insert(messageObj, 'messages', () => {
         // TODO: send a message via bot
