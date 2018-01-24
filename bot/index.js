@@ -9,35 +9,50 @@ module.exports = {
   createGroup
 }
 
-function sendRequest(body, deferred, url) {
+let credentials = {
+  email: '',
+  auth: {
+    token: ''
+  }
+};
+
+function sendRequest(body, promise, url) {
   request({
     method: 'POST',
     uri: botUrl + url,
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    headers: {
+      Authorization: 'Bearer ' + credentials.auth.token
+    }
   },
-  (err,httpResponse,body) => {
+  (err,httpResponse,response) => {
     if (err) {
-      return deferred.reject(err);
+      promise.reject(err);
     }
 
-    // If 403 status, repeat the http call
-    if (httpResponse.statusCode == 403) {
-      
+    // If 401 status, repeat the http call
+    console.log(httpResponse.statusCode);
+    if (httpResponse.statusCode == 401 || httpResponse.statusCode == 403) {
+      login({'email':'mail@hospital.com', 'password':'medex'}).then((res) => {
+        credentials = JSON.parse(res.response);
+        sendRequest(body, promise, url);
+      });
+
+      return;
     }
 
-    deferred.resolve({httpResponse, body});
+    promise.resolve({httpResponse, response});
   });
 }
 
 // Bot login function, required body object
 /*
   {
-    "email":"mail@hospital.com",
-    "password":"medex"
+    'email':'mail@hospital.com',
+    'password':'medex'
   }
 */
 function login(body) {
-  console.log('aaa');
   const deferred = q.defer();
 
   sendRequest(body, deferred, '/login');
