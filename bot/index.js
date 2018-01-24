@@ -31,7 +31,6 @@ function sendRequest(body, promise, url) {
     }
 
     // If 401 status, repeat the http call
-    console.log(httpResponse.statusCode);
     if (httpResponse.statusCode == 401 || httpResponse.statusCode == 403) {
       login({'email':'mail@hospital.com', 'password':'medex'}).then((res) => {
         credentials = JSON.parse(res.response);
