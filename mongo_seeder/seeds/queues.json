@@ -4,8 +4,8 @@
     "description": "The group is intended for on-call cardiologists",
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
     "owner": "+38163629739",
-    "allowedToSubsribe": ["+380663838050, +38163629739"],
-    "allowedToSend": ["+380663838050, +38163629739"],
+    "allowedToSubsribe": ["+380663838050", "+38163629739"],
+    "allowedToSend": ["+380663838050", "+38163629739"],
     "subscribed": [],
     "active": true
   },
@@ -14,8 +14,8 @@
     "description": "The group is intended for on-call pediatrics",
     "time": "Tue Dec 18 2017 22:05:00 GMT+0100 (CET)",
     "owner": "+38163629739",
-    "allowedToSubsribe": ["+380663838050, +38163629739"],
-    "allowedToSend": ["+380663838050, +38163629739"],
+    "allowedToSubsribe": ["+380663838050", "+38163629739"],
+    "allowedToSend": ["+380663838050", "+38163629739"],
     "subscribed": [],
     "active": false
   },
@@ -24,8 +24,8 @@
     "description": "The group is intended for on-call oncologists",
     "time": "Tue Dec 18 2017 21:55:11 GMT+0100 (CET)",
     "owner": "+38163629739",
-    "allowedToSubsribe": ["+380663838050, +38163629739"],
-    "allowedToSend": ["+380663838050, +38163629739"],
+    "allowedToSubsribe": ["+380663838050", "+38163629739"],
+    "allowedToSend": ["+380663838050", "+38163629739"],
     "subscribed": [],
     "active": true
   }
