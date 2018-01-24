@@ -86,26 +86,44 @@ function save(req) {
       mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
         if (queue) {
-          // TODO: Request the bot to create new queue group
           let queueGroupName = generateQueueGroupName(queueType);
           // Save the message to DB - collection 'messages'
           messageObj.queueGroup = queueGroupName;
           messageObj.queueType = queueType;
           queue.allowedToSubsribe.push(req.body.botNumber);
-          let queueGroupObj = {
-            queueType,
-            queueGroup: queueGroupName,
-            responseFrom: [],
-            subscribers: queue.allowedToSubsribe
-          };
 
-          mongo.insert(messageObj, 'messages', () => {
-            // Save new queue group to DB
-            mongo.insert(queueGroupObj, 'queueGroups', () => {
-              // TODO: send a message via bot
-              deferred.resolve();
+          // Request the bot to create new queue group
+          bot.createGroup(JSON.stringify({
+            queueGroup: queueGroupName,
+            numbers: queue.allowedToSubsribe.toString().split(',').join(', ')
+          })).then(() => {
+            console.log(colors.green('Group ' + queueGroupName + ' created.'));
+            let queueGroupObj = {
+              queueType,
+              queueGroup: queueGroupName,
+              responseFrom: [],
+              subscribers: queue.allowedToSubsribe.toString().split(',')
+            };
+
+            mongo.insert(messageObj, 'messages', () => {
+              // Save new queue group to DB
+              mongo.insert(queueGroupObj, 'queueGroups', () => {
+                // Send a message via bot
+                bot.sendMessage(JSON.stringify({
+                  numbers: queue.allowedToSubsribe.toString().split(',').join(', '),
+                  message: req.body.message,
+                  queueGroup: queueGroupName
+                })).then(() => {
+                  console.log(colors.green('Message: ' + req.body.message + ' sent to ' + queue.allowedToSubsribe.toString().split(',').join(', ')));
+                  deferred.resolve();
+                }).catch(err => {
+                  console.log(colors.red('bot.createGroup err: ', err));
+                });
+              });
             });
-          });
+          }).catch(err => {
+            console.log('bot.createGroup error: ', err);
+          })
         } else {
           // Queue not found - send the alert message via bot
           console.log(colors.red(queueType + ' queue is not found.'));
