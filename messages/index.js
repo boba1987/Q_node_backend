@@ -97,7 +97,7 @@ function save(req) {
             queueGroup: queueGroupName,
             numbers: queue.allowedToSubsribe.toString().split(',').join(', ')
           })).then(() => {
-            console.log(colors.green('Group ' + queueGroupName + ' created.'));
+            console.log(colors.green('Group "' + queueGroupName + '" created.'));
             let queueGroupObj = {
               queueType,
               queueGroup: queueGroupName,
@@ -114,7 +114,7 @@ function save(req) {
                   message: req.body.message,
                   queueGroup: queueGroupName
                 })).then(() => {
-                  console.log(colors.green('Message: ' + req.body.message + ' sent to ' + queue.allowedToSubsribe.toString().split(',').join(', ')));
+                  console.log(colors.green('Message: "' + req.body.message + '" sent to ' + queue.allowedToSubsribe.toString().split(',').join(', ')));
                   deferred.resolve();
                 }).catch(err => {
                   console.log(colors.red('bot.createGroup err: ', err));
