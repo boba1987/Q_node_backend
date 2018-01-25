@@ -1,7 +1,7 @@
 // This module holds methods for communication with the bot
 const request = require('request');
 const q = require('q');
-const botUrl = 'https://bot.s1z.info';
+const botUrl = 'https://bot6.textsecure.medx.im';
 
 module.exports = {
   login,
