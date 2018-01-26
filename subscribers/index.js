@@ -6,8 +6,8 @@ const colors = require('colors');
 const subscribeSchema = require('../schemas/subscribers.json');
 
 // Subscribe user to a specific group based on req.body.queue
-// TODO: Connect this method to the bot
 function subscribe(req) {
+  console.log('Subscribe: ', req.body);
   const deferred = q.defer();
   const v = validator.isValid(req, subscribeSchema.subscribe);
   // Validate request
@@ -17,8 +17,10 @@ function subscribe(req) {
     mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
       // If queue is found
       if (queue) {
-        // Check if number is allowed to subscribe
-        if (queue.allowedToSubsribe.indexOf(req.body.number) != -1) {
+        /*
+          Check if allowedToSubsribe field is set and is number allowed to subscribe OR if allowedToSubsribe is not set, subscribe number
+        */
+        if ((queue.allowedToSubsribe.length && queue.allowedToSubsribe.indexOf(req.body.number) != -1) || !queue.allowedToSubsribe.length) {
           // Check if allready subscribed
           if (queue.subscribed.indexOf(req.body.number) != -1) {
             console.log(colors.red(new Date(), req.body.number + 'is allready subscribed to ' + req.body.queue));
