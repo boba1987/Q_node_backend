@@ -2,6 +2,7 @@ const mongo = require('../mongo');
 const validator = require('../validator');
 const q = require('q');
 const colors = require('colors');
+const bot = require('../bot');
 
 const subscribeSchema = require('../schemas/subscribers.json');
 
@@ -29,7 +30,13 @@ function subscribe(req) {
             // Subscirbe user
             mongo.update({queueType: req.body.queue}, {$push: {subscribed: req.body.number}}, 'queues', () => {
               console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
-              deferred.resolve();
+              // Send confirmation that number is now subscribed
+              bot.sendMessage({
+                numbers: req.body.number,
+                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + queue.subscribed.length + 1 + 'active subscribers.'
+              }).then(() => {
+                deferred.resolve();
+              });
             });
           }
         } else {
@@ -61,8 +68,14 @@ function unsubscribe(req) {
         // Check if is subscribed
         if (queue.subscribed.indexOf(req.body.number) != -1) {
           mongo.update({queueType: req.body.queue}, {$pull: {subscribed: req.body.number}}, 'queues', () => {
-            console.log(colors.green(new Date(), req.body.number + ' is unsubscribed from ' + req.body.queue));
-            deferred.resolve();
+            // Send confirmation that number is now unsubscribed
+            bot.sendMessage({
+              numbers: req.body.number,
+              message: 'You are unsubscribed from ' + req.body.queue + '.'
+            }).then(() => {
+              console.log(colors.green(new Date(), req.body.number + ' is unsubscribed from ' + req.body.queue));
+              deferred.resolve();
+            });
           });
         } else {
           // Number is not subscribed to this queue
