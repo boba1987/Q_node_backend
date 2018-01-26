@@ -61,7 +61,7 @@ function unsubscribe(req) {
         // Check if is subscribed
         if (queue.subscribed.indexOf(req.body.number) != -1) {
           mongo.update({queueType: req.body.queue}, {$pull: {subscribed: req.body.number}}, 'queues', () => {
-            console.log(colors.green(new Date(), req.body.number + 'is unsubscribed from ' + req.body.queue));
+            console.log(colors.green(new Date(), req.body.number + ' is unsubscribed from ' + req.body.queue));
             deferred.resolve();
           });
         } else {
