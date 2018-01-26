@@ -12,13 +12,12 @@
     "id": "/create",
     "type": "object",
     "properties": {
-      "queue": {"type": "string"},
       "@queue": {"type": "string"},
       "owner": {"type": "string"},
       "queueType": {"type": "string"},
       "queueEscalation": {"type": "string"},
       "description": {"type": "string"}
     },
-    "required": ["queue", "@queue", "owner", "queueType", "queueEscalation", "description"]
+    "required": ["@queue", "owner", "queueType", "queueEscalation", "description"]
   }
 }
