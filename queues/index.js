@@ -66,6 +66,7 @@ function create(req) {
           fields.responseFrom = [];
           fields.subscribers = [];
           fields.active = false;
+          fields.time = new Date();
 
           if (typeof fields.allowedNumbersToSend == 'string') {
             fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
