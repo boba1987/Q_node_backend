@@ -30,10 +30,11 @@ function subscribe(req) {
             // Subscirbe user
             mongo.update({queueType: req.body.queue}, {$push: {subscribed: req.body.number}}, 'queues', () => {
               console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
+              let activeSubscribers = parseInt(queue.subscribed.length, 10) + 1;
               // Send confirmation that number is now subscribed
               bot.sendMessage({
                 numbers: req.body.number,
-                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + parseInt(queue.subscribed.length, 10) + 1 + ' active subscribers.'
+                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
               }).then(() => {
                 deferred.resolve();
               });
