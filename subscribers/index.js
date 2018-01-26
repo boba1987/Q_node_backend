@@ -50,7 +50,7 @@ function subscribe(req) {
           // Send warning that number is not allowed to subscribe
           bot.sendMessage({
             numbers: req.body.number,
-            message: 'Your number ' + req.body.number + ' does not have permission to subscribe to the ' + req.body.queue + '. ' + req.body.queue + ' is owned by ' + queue.owner
+            message: 'Your number ' + req.body.number + ' does not have permission to subscribe to the ' + req.body.queue + '. ' + req.body.queue + ' queue is owned by ' + queue.owner
           }).then(() => {
             deferred.resolve();
             console.log(colors.red(new Date(), req.body.number + 'is Not allowed to subscribe ' + req.body.queue));
@@ -60,7 +60,7 @@ function subscribe(req) {
         // Send warning that Queue does not exists
         bot.sendMessage({
           numbers: req.body.number,
-          message: 'You cannot subscribe to ' + req.body.queue + '.  The queue ' + req.body.queue + ' does not exists'
+          message: 'You cannot subscribe to ' + req.body.queue + '.  The queue ' + req.body.queue + ' does not exists.'
         }).then(() => {
           deferred.resolve();
           console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
@@ -83,13 +83,14 @@ function unsubscribe(req) {
     mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
       // If queue is found
       if (queue) {
+        let activeSubscribers = parseInt(queue.subscribed.length, 10) - 1;
         // Check if is subscribed
         if (queue.subscribed.indexOf(req.body.number) != -1) {
           mongo.update({queueType: req.body.queue}, {$pull: {subscribed: req.body.number}}, 'queues', () => {
             // Send confirmation that number is now unsubscribed
             bot.sendMessage({
               numbers: req.body.number,
-              message: 'You are unsubscribed from ' + req.body.queue + '.'
+              message: 'You are unsubscribed from ' + req.body.queue + '. There are now ' + activeSubscribers + ' active subscribers.'
             }).then(() => {
               console.log(colors.green(new Date(), req.body.number + ' is unsubscribed from ' + req.body.queue));
               deferred.resolve();
