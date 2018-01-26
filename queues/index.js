@@ -76,16 +76,20 @@ function create(req) {
       fields.time = new Date();
 
       if (typeof fields.allowedNumbersToSend == 'string') {
-        fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
+        fields.allowedToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
         });
       }
 
       if (typeof fields.allowedNumbersToSubscribe == 'string') {
-        fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
+        fields.allowedToSubsribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
           return item.trim();
         });
       }
+
+      // Remove unnececary properties
+      delete fields.allowedNumbersToSubscribe;
+      delete fields.allowedNumbersToSend;
 
       save(fields, deferred);
     }).catch( err =>{
