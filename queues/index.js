@@ -45,8 +45,8 @@ function create(req) {
       // Check if file is type 'text/csv'
       if (files[key].type != 'text/csv') {
         deferred.reject({status: 400, message: 'File ' + files[key].name + ' is not type of csv! Plese, upload csv format file.' });
-      } else if ( allowedFileFields.indexOf(files[key].name) == -1 ) { // If there is a file on field that is not allowed
-        deferred.reject({status: 400, message: 'Field ' + files[key].name + ' is not allowed! Allowed file fields are ' + allowedFileFields.toString() });
+      } else if ( allowedFileFields.indexOf(key) == -1 ) { // If there is a file on field that is not allowed
+        deferred.reject({status: 400, message: 'Field ' + key + ' is not allowed! Allowed file fields are ' + allowedFileFields.toString() });
       } else {
         queue.push(parser.csv(files[key].path));
         // Remove file from ./tmp
@@ -78,13 +78,13 @@ function create(req) {
               return item.trim();
             });
           }
-
-          save(fields, deferred);
         }).catch( err =>{
           deferred.reject({status: err.status, message: err.message});
         });
       }
     }
+
+    save(fields, deferred);
   });
 
   return deferred.promise;
