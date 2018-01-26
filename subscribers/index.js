@@ -33,7 +33,7 @@ function subscribe(req) {
               // Send confirmation that number is now subscribed
               bot.sendMessage({
                 numbers: req.body.number,
-                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + queue.subscribed.length + 1 + 'active subscribers.'
+                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + parseInt(queue.subscribed.length, 10) + 1 + ' active subscribers.'
               }).then(() => {
                 deferred.resolve();
               });
