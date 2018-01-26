@@ -81,13 +81,13 @@ function save(req) {
           // Save the message to DB - collection 'messages'
           messageObj.queueGroup = queueGroupName;
           messageObj.queueType = queueType;
-          queue.allowedToSubsribe.push(req.body.botNumber);
+          queue.subscribed.push(req.body.botNumber);
 
           let queueGroupObj = {
             queueType,
             queueGroup: queueGroupName,
             responseFrom: [],
-            subscribers: queue.allowedToSubsribe.toString().split(',')
+            subscribers: queue.subscribed.toString().split(',')
           };
 
           // Saving message to DB
@@ -96,11 +96,11 @@ function save(req) {
             mongo.insert(queueGroupObj, 'queueGroups', () => {
               // Send a message via bot
               bot.sendMessage({
-                numbers: queue.allowedToSubsribe.toString().split(',').join(', '),
+                numbers: queue.subscribed.toString().split(',').join(', '),
                 message: req.body.message,
                 queueGroup: queueGroupName
               }).then(() => {
-                console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.allowedToSubsribe.toString().split(',').join(', ')));
+                console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.subscribed.toString().split(',').join(', ')));
                 deferred.resolve();
               }).catch(err => {
                 console.log(colors.red('bot.createGroup err: ', err));
