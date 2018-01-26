@@ -18,36 +18,53 @@ function subscribe(req) {
     mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
       // If queue is found
       if (queue) {
+        let activeSubscribers = parseInt(queue.subscribed.length, 10) + 1;
         /*
           Check if allowedToSubsribe field is set and is number allowed to subscribe OR if allowedToSubsribe is not set, subscribe number
         */
         if ((queue.allowedToSubsribe.length && queue.allowedToSubsribe.indexOf(req.body.number) != -1) || !queue.allowedToSubsribe.length) {
           // Check if allready subscribed
           if (queue.subscribed.indexOf(req.body.number) != -1) {
-            console.log(colors.red(new Date(), req.body.number + 'is allready subscribed to ' + req.body.queue));
-            deferred.resolve();
+            // Send warning that number is allready subscribed
+            bot.sendMessage({
+              numbers: req.body.number,
+              message: 'You are already subscribed to  ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
+            }).then(() => {
+              console.log(colors.red(new Date(), req.body.number + 'is allready subscribed to ' + req.body.queue));
+              deferred.resolve();
+            });
           } else {
             // Subscirbe user
             mongo.update({queueType: req.body.queue}, {$push: {subscribed: req.body.number}}, 'queues', () => {
-              console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
-              let activeSubscribers = parseInt(queue.subscribed.length, 10) + 1;
               // Send confirmation that number is now subscribed
               bot.sendMessage({
                 numbers: req.body.number,
                 message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
               }).then(() => {
+                console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
                 deferred.resolve();
               });
             });
           }
         } else {
-          console.log(colors.red(new Date(), req.body.number + 'is Not allowed to subscribe ' + req.body.queue));
-          deferred.resolve();
+          // Send warning that number is not allowed to subscribe
+          bot.sendMessage({
+            numbers: req.body.number,
+            message: 'You are not allowed to subscribe to ' + req.body.queue + '.'
+          }).then(() => {
+            deferred.resolve();
+            console.log(colors.red(new Date(), req.body.number + 'is Not allowed to subscribe ' + req.body.queue));
+          });
         }
       } else {
-        // Queue does not exists
-        console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
-        deferred.resolve();
+        // Send warning that Queue does not exists
+        bot.sendMessage({
+          numbers: req.body.number,
+          message: req.body.queue + ' does not exists'
+        }).then(() => {
+          deferred.resolve();
+          console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
+        });
       }
     })
   }
