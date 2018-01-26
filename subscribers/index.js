@@ -108,9 +108,14 @@ function unsubscribe(req) {
           });
         }
       } else {
-        // Queue does not exists
-        console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
-        deferred.resolve();
+        // Send a warning that Queue does not exists
+        bot.sendMessage({
+          numbers: req.body.number,
+          message: 'You cannot unsubscribe from ' + req.body.queue + '. The queue ' + req.body.queue + ' does not exist'
+        }).then(() => {
+          console.log(colors.red(new Date(), req.body.queue + ' Queue does not exists'));
+          deferred.resolve();
+        });
       }
     })
   }
