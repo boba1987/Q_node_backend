@@ -71,25 +71,21 @@ function create(req) {
 
       // Enhance fields object with arrays to contain status, responseFrom and subscribers
       fields.responseFrom = [];
-      fields.subscribers = [];
+      fields.subscribed = [];
       fields.active = false;
       fields.time = new Date();
 
       if (typeof fields.allowedNumbersToSend == 'string') {
-        fields.allowedToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
+        fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
         });
       }
 
       if (typeof fields.allowedNumbersToSubscribe == 'string') {
-        fields.allowedToSubsribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
+        fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
           return item.trim();
         });
       }
-
-      // Remove unnececary properties
-      delete fields.allowedNumbersToSubscribe;
-      delete fields.allowedNumbersToSend;
 
       save(fields, deferred);
     }).catch( err =>{

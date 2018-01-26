@@ -20,9 +20,9 @@ function subscribe(req) {
       if (queue) {
         let activeSubscribers = parseInt(queue.subscribed.length, 10) + 1;
         /*
-          Check if allowedToSubsribe field is set and is number allowed to subscribe OR if allowedToSubsribe is not set, subscribe number
+          Check if allowedNumbersToSubscribe field is set and is number allowed to subscribe OR if allowedNumbersToSubscribe is not set, subscribe number
         */
-        if ((queue.allowedToSubsribe.length && queue.allowedToSubsribe.indexOf(req.body.number) != -1) || !queue.allowedToSubsribe.length) {
+        if ((queue.allowedNumbersToSubscribe.length && queue.allowedNumbersToSubscribe.indexOf(req.body.number) != -1) || !queue.allowedNumbersToSubscribe.length) {
           // Check if allready subscribed
           if (queue.subscribed.indexOf(req.body.number) != -1) {
             // Send warning that number is allready subscribed

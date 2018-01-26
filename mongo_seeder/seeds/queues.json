@@ -5,8 +5,8 @@
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
     "owner": "+38163629739",
     "ownerName": "Boba_Dj",
-    "allowedToSubsribe": ["+38163629739"],
-    "allowedToSend": ["+38163629739"],
+    "allowedNumbersToSubscribe": ["+38163629739"],
+    "allowedNumbersToSend": ["+38163629739"],
     "subscribed": [],
     "active": true
   },
@@ -16,8 +16,8 @@
     "time": "Tue Dec 18 2017 22:05:00 GMT+0100 (CET)",
     "owner": "+38163629739",
     "ownerName": "Boba_Dj",
-    "allowedToSubsribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
-    "allowedToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
+    "allowedNumbersToSubscribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
+    "allowedNumbersToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "subscribed": [],
     "active": false
   },
@@ -27,8 +27,8 @@
     "time": "Tue Dec 18 2017 21:55:11 GMT+0100 (CET)",
     "owner": "+38163629739",
     "ownerName": "Boba_Dj",
-    "allowedToSubsribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
-    "allowedToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
+    "allowedNumbersToSubscribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
+    "allowedNumbersToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "subscribed": [],
     "active": true
   },
@@ -38,8 +38,8 @@
     "time": "Tue Dec 19 2017 02:00:28 GMT+0100 (CET)",
     "owner": "+38163629739",
     "ownerName": "Boba_Dj",
-    "allowedToSubsribe": [],
-    "allowedToSend": [],
+    "allowedNumbersToSubscribe": [],
+    "allowedNumbersToSend": [],
     "subscribed": [],
     "active": true
   }
