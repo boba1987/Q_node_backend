@@ -1,12 +1,22 @@
 {
-  "id": "/createUser",
-  "type": "object",
-  "properties": {
-    "name": {"type": "string"},
-    "password": {"type": "string"},
-    "user": {"type": "string"},
-    "email": {"type": "string"},
-    "occupation": {"type": "string"}
+  "createUser": {
+    "id": "/createUser",
+    "type": "object",
+    "properties": {
+      "name": {"type": "string"},
+      "password": {"type": "string"},
+      "user": {"type": "string"},
+      "email": {"type": "string"},
+      "occupation": {"type": "string"}
+    },
+    "required": ["name", "password", "username", "email", "occupation"]
   },
-  "required": ["name", "password", "username", "email", "occupation"]
+  "editStatus": {
+    "id": "/editStatus",
+    "type": "object",
+    "properties": {
+      "email": {"type": "string"}
+    },
+    "required": ["email"]
+  }
 }

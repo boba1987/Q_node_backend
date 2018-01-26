@@ -172,6 +172,13 @@ app
       res.status(err.status).send({message: err.message})
     })
   })
+  .post('/users/editStatus', passport.authenticate('jwt', {session: false}), (req, res) => {
+    userManagement.editStatus(req).then(() => {
+      res.status(200).send({status: 'ok'});
+    }).catch(err => {
+      res.status(err.status).send({message: err.message})
+    })
+  })
   .post('/hospital/details', passport.authenticate('jwt', {session: false}), (req, res) => {
     let request = JSON.parse(req.body);
     config.hospitalName = request.hospitalName;

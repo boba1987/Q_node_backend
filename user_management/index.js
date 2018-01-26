@@ -3,9 +3,15 @@ const createUserSchema = require('../schemas/createUser.json');
 const validator = require('../validator');
 const mongo = require('../mongo');
 
+module.exports = {
+  create,
+  edit,
+  editStatus
+}
+
 function create(req) {
   const deferred = new q.defer();
-  const v = validator.isValid(req, createUserSchema); // Validate request
+  const v = validator.isValid(req, createUserSchema.createUser); // Validate request
   if (v) { // Reject if request is not valid - some field must be missing or invlaid type
     deferred.reject({message: v});
   } else {
@@ -34,7 +40,7 @@ function create(req) {
 
 function edit(req) {
   const deferred = new q.defer();
-  const v = validator.isValid(req, createUserSchema); // Validate request
+  const v = validator.isValid(req, createUserSchema.createUser); // Validate request
   if (v) { // Reject if request is not valid - some field must be missing or invlaid type
     deferred.reject({message: v, status: 400});
   } else {
@@ -63,4 +69,26 @@ function edit(req) {
   return deferred.promise;
 }
 
-module.exports = {create, edit}
+
+function editStatus(req) {
+  const deferred = new q.defer();
+  const v = validator.isValid(req, createUserSchema.editStatus); // Validate request
+
+  if (v) { // Reject if request is not valid - some field must be missing or invlaid type
+    deferred.reject({message: v, status: 400});
+  } else {
+    // Check if user exists
+    mongo.findOne({email: req.body.email}, {}, 'users', function(doc) {
+      if (!doc) {
+        // User is not found
+        deferred.reject({message: 'User not found!'});
+      } else {
+        mongo.update({email: req.body.email}, {$set: {active: req.body.active}}, 'users', () => {
+            deferred.resolve();
+        })
+      }
+    });
+  }
+
+  return deferred.promise;
+}
