@@ -6,6 +6,17 @@ const url = config.mongo;
 
 let dbConnection;
 
+module.exports = {
+  insert,
+  update,
+  find,
+  findOne,
+  createTextIndex,
+  drop,
+  findOneAndUpdate
+}
+
+
 // Use connect method to connect to the Server
 MongoClient.connect(url, function(err, db) {
   if (err) console.log(err);
@@ -98,11 +109,23 @@ function drop(dbCollection, callback) {
   collection.drop(callback());
 }
 
-module.exports = {
-  insert,
-  update,
-  find,
-  findOne,
-  createTextIndex,
-  drop
+
+// Find and update a single document
+/*
+  Example usage
+  findAndUpdateOne({filter, update, collection, callback, options})
+*/
+
+function findOneAndUpdate(filter, update, dbCollection, callback, options = {}) {
+  const collection = dbConnection.collection(dbCollection);
+
+  collection.findOneAndUpdate(filter, update, options, function(err, docs) {
+    if (err) {
+      console.log('findOneAndUpdate err: ', err)
+    }
+
+    if (callback) {
+      callback(docs);
+    }
+  })
 }
