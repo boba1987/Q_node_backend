@@ -75,16 +75,20 @@ function create(req) {
       fields.active = false;
       fields.time = new Date();
 
-      if (typeof fields.allowedNumbersToSend == 'string') {
+      if (typeof fields.allowedNumbersToSend == 'string' && fields.allowedNumbersToSend.length) {
         fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
         });
+      } else {
+        fields.allowedNumbersToSend = [];
       }
 
-      if (typeof fields.allowedNumbersToSubscribe == 'string') {
+      if (typeof fields.allowedNumbersToSubscribe == 'string' && fields.allowedNumbersToSubscribe) {
         fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
           return item.trim();
         });
+      } else {
+        fields.allowedNumbersToSubscribe = [];
       }
 
       save(fields, deferred);
