@@ -5,6 +5,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 const fs = require('fs');
 
 const authentication = require('./authentication');
@@ -18,6 +21,10 @@ const config = require('./config.json');
 const downloader = require('./downloader');
 const formidable = require('formidable');
 const subscribers = require('./subscribers');
+
+io.on('connection', () => {
+  console.log('A user connected');
+});
 
 passport.use(authentication.strategy);
 
