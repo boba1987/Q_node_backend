@@ -5,18 +5,14 @@ const messages = require('../schemas/messages.json');
 const validator = require('../validator');
 const colors = require('colors');
 const bot = require('../bot');
+const dateformat = require('dateformat');
 
 function generateQueueGroupName(name) {
   const currDate = new Date();
-  const seconds = currDate.getSeconds();
-  const minutes = currDate.getMinutes();
-  const hour = currDate.getHours();
 
-  const year = currDate.getFullYear();
-  const month = currDate.getMonth(); // beware: January = 0; February = 1, etc.
-  const day = currDate.getDate();
+  let generatedName = name + dateformat(currDate, '_HHMMss_ddmmyyyy');
 
-  let generatedName = name + '_' + hour + minutes + seconds + '_' + day + (month+1) + year;
+  console.log(generatedName);
 
   return generatedName;
 }
