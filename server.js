@@ -80,7 +80,7 @@ app
       telephone: config.telephone
     })
   })
-  .get('/messagesCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
+  .get('/messagesCsv', (req, res) => {
     messages.getMessages(req).then((messages) => {
       messages.items.map(message => {
         // Remove array braces and return only comma separated strings
@@ -93,18 +93,27 @@ app
         }
       });
 
-      downloader.csv(res, ['_id', 'queueType', 'queue', 'time', 'sender', 'message', 'responseFrom', 'subscribers'], messages);
+      downloader.csv(res, ['_id', 'queueType', 'queueGroup', 'time', 'sender', 'message', 'responseFrom', 'subscribers'], messages);
     })
   })
   .get('/subscribersCsv', passport.authenticate('jwt', {session: false}), (req, res) => {
     resolver.resolveGet(req, 'subscribers').then(subscribers => {
-      downloader.csv(res, ['_id', 'queue', 'sender', 'status'], subscribers);
+      downloader.csv(res, ['_id', 'queueGroup', 'queueType', 'sender', 'status'], subscribers);
     });
   })
   .get('/logo.png', (req, res) => {
     const img = fs.readFileSync('./logo.png');
     res.writeHead(200, {'Content-Type': 'image/png' });
     res.end(img, 'binary');
+  })
+  .get('/messages/queue/csv/:name', (req, res) => {
+    mongo.find({queueGroup: req.params.name}, 'messages', (messages) => {
+      // Put messages in form expected by downloader module
+      let items = {
+        items: messages
+      };
+      downloader.csv(res, ['_id', 'sender', 'message', 'time', 'queueType'], items);
+    })
   })
 
 // POST routes
