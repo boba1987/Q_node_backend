@@ -119,7 +119,7 @@ app
       let items = {
         items: messages
       };
-      downloader.csv(res, ['_id', 'sender', 'message', 'time', 'queueType'], items);
+      downloader.csv(res, ['_id', 'sender', 'message', 'time', 'queueGroup', 'queueType'], items);
     })
   })
 
