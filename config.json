@@ -1,1 +1,1 @@
-{"hospitalName":"Victoria eyes and ear hospitala","email":"hospital@hospital.comm","telephone":"+139489148","mongo":"mongodb://localhost:27017/medexQ","tokenExpiration":6000000000,"pageSize":10}
+{"hospitalName":"Victoria eyes and ear hospital","email":"hospital@hospital.comm","telephone":"+139489148","mongo":"mongodb://localhost:27017/medexQ","tokenExpiration":6000000000,"pageSize":10}
