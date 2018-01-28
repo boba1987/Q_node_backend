@@ -101,7 +101,7 @@ app
       downloader.csv(res, ['_id', 'queue', 'sender', 'status'], subscribers);
     });
   })
-  .get('/logo.png', passport.authenticate('jwt', {session: false}), (req, res) => {
+  .get('/logo.png', (req, res) => {
     const img = fs.readFileSync('./logo.png');
     res.writeHead(200, {'Content-Type': 'image/png' });
     res.end(img, 'binary');
@@ -192,7 +192,7 @@ app
       email: config.email
     });
   })
-  .post('/logo', passport.authenticate('jwt', {session: false}), (req, res) => {
+  .post('/logoUpload', passport.authenticate('jwt', {session: false}), (req, res) => {
     const form = new formidable.IncomingForm();
     form.uploadDir = '.';
 
