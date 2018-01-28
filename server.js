@@ -207,7 +207,7 @@ app
           }
 
           fs.rename('./' + files[key].path, './logo.png', () => {
-            res.sendStatus(200);
+            res.status(200).send({status: 'ok'});
           });
         }
       }
