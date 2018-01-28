@@ -106,7 +106,7 @@ app
     res.writeHead(200, {'Content-Type': 'image/png' });
     res.end(img, 'binary');
   })
-  .get('/messages/queue/csv/:name', (req, res) => {
+  .get('/messages/queue/csv/:name', passport.authenticate('jwt', {session: false}), (req, res) => {
     mongo.find({queueGroup: req.params.name}, 'messages', (messages) => {
       // Put messages in form expected by downloader module
       let items = {
