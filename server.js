@@ -247,6 +247,6 @@ app
     messages.save(req).then(() => {
       res.sendStatus(200);
     }).catch(err => {
-      res.status(err.status).send({message: err.message});
+      res.sendStatus(err.status);
     })
   })

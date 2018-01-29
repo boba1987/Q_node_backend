@@ -104,8 +104,13 @@ function save(req) {
           });
         } else {
           // Queue not found - send the alert message via bot
-          console.log(colors.red(queueType + ' queue is not found.'));
-          deferred.resolve();
+          bot.sendMessage({
+            numbers: req.body.number,
+            message: 'You cannot send a message to ' + req.body.queue + '. The queue ' + req.body.queue + ' does not exist.'
+          }).then(() => {
+            console.log(colors.red(queueType + ' queue is not found.'));
+            deferred.reject({status: 404});
+          });
         }
       });
     }
