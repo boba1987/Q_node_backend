@@ -77,7 +77,6 @@ function save(req) {
           // Save the message to DB - collection 'messages'
           messageObj.queueGroup = queueGroupName;
           messageObj.queueType = queueType;
-          queue.subscribed.push(req.body.botNumber);
 
           let queueGroupObj = {
             queueType,
