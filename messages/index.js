@@ -93,7 +93,7 @@ function save(req) {
               // Send a message via bot
               bot.sendMessage({
                 numbers: queue.subscribed.toString().split(',').join(', '),
-                message: req.body.message,
+                message: req.body.message + '\n Message by ' + req.body.number,
                 queueGroup: queueGroupName
               }).then(() => {
                 console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.subscribed.toString().split(',').join(', ')));
