@@ -34,13 +34,12 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   return deferred.promise;
 }
 
-function aggregate(req, collection, sort = {}, group = {}, projection = {}) {
+function aggregate(req, collection, sort = {}, group = {}) {
   const deferred = q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
   let totalPages = 0;
   function callback(docs) {
-    console.log(docs);
     deferred.resolve({
       totalPages: Math.ceil(totalPages/pageSize),
       items: docs
