@@ -15,7 +15,7 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   let totalPages = 0;
   function callback(docs) {
     deferred.resolve({
-      totalPages: Math.ceil(docs.length/pageSize),
+      totalPages: totalPages,
       items: docs
     })
   }
@@ -58,7 +58,7 @@ function aggregate(req, collection, sort = {}, group = {}) {
   }
 
   // Get total number of pages
-  mongo.find({}, collection, (docs) => {
+  mongo.aggregate('messages', sort, group, {skip: 0, limit: 10000, filter: new RegExp(req.query.search)}, (docs) => {
     totalPages = Math.ceil(docs.length/pageSize);
     mongo.aggregate('messages', sort, group, options, callback); // Get only filtered documents
   });
