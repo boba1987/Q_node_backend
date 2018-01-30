@@ -2,6 +2,11 @@ const config = require('../config.json');
 const mongo = require('../mongo');
 const q = require('q');
 
+module.exports = {
+  resolveGet,
+  aggregate
+}
+
 // GET routes generic resolve function
 function resolveGet(req, collection, filter = {}, projection = {}) {
   const deferred = q.defer();
@@ -29,6 +34,35 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   return deferred.promise;
 }
 
-module.exports = {
-  resolveGet
+function aggregate(req, collection, sort = {}, group = {}, projection = {}) {
+  const deferred = q.defer();
+  let pageSize = parseInt(req.query.pageSize) || config.pageSize;
+  const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
+  let totalPages = 0;
+  function callback(docs) {
+    console.log(docs);
+    deferred.resolve({
+      totalPages: Math.ceil(totalPages/pageSize),
+      items: docs
+    })
+  }
+
+  let options = {
+    skip,
+    limit: pageSize,
+    filter: ''
+  };
+
+  // If there is parameter "search" on the request, do text search on DB
+  if (req.query.search) {
+    options.filter = new RegExp(req.query.search);
+  }
+
+  // Get total number of pages
+  mongo.find(options, collection, function(docs) {
+    totalPages = docs.length;
+    mongo.aggregate('messages', sort, group, options, callback); // Get only filtered documents
+  });
+
+  return deferred.promise;
 }

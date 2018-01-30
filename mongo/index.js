@@ -13,7 +13,8 @@ module.exports = {
   findOne,
   createTextIndex,
   drop,
-  findOneAndUpdate
+  findOneAndUpdate,
+  aggregate
 }
 
 
@@ -21,7 +22,7 @@ module.exports = {
 MongoClient.connect(url, function(err, db) {
   if (err) console.log(err);
   dbConnection = db;
-  createTextIndex('messages', {queue: 'text', message: 'text'});
+  createTextIndex('messages', {queueGroup: 'text', message: 'text'});
 });
 
 // Inset into database
@@ -128,4 +129,18 @@ function findOneAndUpdate(filter, update, dbCollection, callback, options = {}) 
       callback(docs);
     }
   })
+}
+
+// Aggregate and find first occurance of document by some criteria
+function aggregate(dbCollection, sort, group, options, callback) {
+  const collection = dbConnection.collection(dbCollection);
+
+   collection.aggregate([{ $match: { queueGroup: { $regex: new RegExp(options.filter) } } }, { $sort: sort }, { $group: group }]).skip(options.skip).limit(options.limit).toArray((err, result) => {
+     if (err) {
+       console.log('mongo aggregate error: ', err);
+     }
+     if (callback) {
+       callback(result);
+     }
+   })
 }

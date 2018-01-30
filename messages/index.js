@@ -19,7 +19,15 @@ function generateQueueGroupName(name) {
 
 function getMessages(req) {
   const deferred = q.defer();
-  resolver.resolveGet(req, 'messages').then(messages => {
+
+  let sort = {queueGroup: 1, time: 1};
+  let filter = '';
+
+  if (req.query.search) {
+    filter = req.query.search;
+  }
+
+  resolver.aggregate(req, 'messages', sort, {_id: '$queueGroup', message: {$last: '$message'}, queueType: {$last: '$queueType'}, time: {$last: '$time'}, sender: {$last: '$sender'}, queueGroup: {$last: '$queueGroup'}}, filter).then(messages => {
     mongo.find({}, 'queueGroups', function(queueGroups) {
       messages.items.map(message => { // Enhance each messsage with number of subscribers
         message.responseFrom = [];
