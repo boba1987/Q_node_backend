@@ -55,7 +55,7 @@ function aggregate(req, collection, sort = {}, group = {}) {
   }
 
   // Get total number of pages
-  mongo.find(options, collection, () => {
+  mongo.find({}, collection, () => {
     mongo.aggregate('messages', sort, group, options, callback); // Get only filtered documents
   });
 
