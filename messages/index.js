@@ -20,7 +20,7 @@ function generateQueueGroupName(name) {
 function getMessages(req) {
   const deferred = q.defer();
 
-  let sort = {queueGroup: 1, time: 1};
+  let sort = {time: 1};
   let filter = '';
 
   if (req.query.search) {
