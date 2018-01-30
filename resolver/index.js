@@ -12,10 +12,9 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   const deferred = q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
-  let totalPages = 0;
   function callback(docs) {
     deferred.resolve({
-      totalPages: Math.ceil(totalPages/pageSize),
+      totalPages: Math.ceil(docs.length/pageSize),
       items: docs
     })
   }
@@ -26,8 +25,7 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   }
 
   // Get total number of pages
-  mongo.find(filter, collection, function(docs) {
-    totalPages = docs.length;
+  mongo.find(filter, collection, () => {
     mongo.find(filter, collection, callback, skip, pageSize, projection); // Get only filtered documents
   });
 
@@ -38,10 +36,9 @@ function aggregate(req, collection, sort = {}, group = {}) {
   const deferred = q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
-  let totalPages = 0;
   function callback(docs) {
     deferred.resolve({
-      totalPages: Math.ceil(totalPages/pageSize),
+      totalPages: Math.ceil(docs.length/pageSize),
       items: docs
     })
   }
@@ -58,8 +55,7 @@ function aggregate(req, collection, sort = {}, group = {}) {
   }
 
   // Get total number of pages
-  mongo.find(options, collection, function(docs) {
-    totalPages = docs.length;
+  mongo.find(options, collection, () => {
     mongo.aggregate('messages', sort, group, options, callback); // Get only filtered documents
   });
 
