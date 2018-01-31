@@ -18,7 +18,7 @@ function subscribe(req) {
     mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
       // If queue is found
       if (queue) {
-        let activeSubscribers = parseInt(queue.subscribed.length, 10) + 1;
+        let activeSubscribers = parseInt(queue.subscribed.length, 10);
         /*
           Check if allowedNumbersToSubscribe field is set and is number allowed to subscribe OR if allowedNumbersToSubscribe is not set, subscribe number
         */
@@ -39,7 +39,7 @@ function subscribe(req) {
               // Send confirmation that number is now subscribed
               bot.sendMessage({
                 numbers: req.body.number,
-                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
+                message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + activeSubscribers + 1 + ' active subscribers.'
               }).then(() => {
                 console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
                 deferred.resolve();

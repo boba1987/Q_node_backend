@@ -20,14 +20,14 @@ function generateQueueGroupName(name) {
 function getMessages(req) {
   const deferred = q.defer();
 
-  let sort = {time: 1};
+  let sort = {uid: 1};
   let filter = '';
 
   if (req.query.search) {
     filter = req.query.search;
   }
 
-  resolver.aggregate(req, 'messages', sort, {_id: '$queueGroup', message: {$last: '$message'}, queueType: {$last: '$queueType'}, time: {$last: '$time'}, sender: {$last: '$sender'}, queueGroup: {$last: '$queueGroup'}}, filter).then(messages => {
+  resolver.aggregate(req, 'messages', sort, {_id: '$queueGroup', message: {$last: '$message'}, queueType: {$last: '$queueType'}, time: {$last: '$time'}, sender: {$last: '$sender'}, queueGroup: {$last: '$queueGroup'}, uid: {$last: '$uid'}}, filter).then(messages => {
     mongo.find({}, 'queueGroups', function(queueGroups) {
       messages.items.map(message => { // Enhance each messsage with number of subscribers
         message.responseFrom = [];
@@ -58,10 +58,12 @@ function save(req) {
   if (v) {
     deferred.reject({status: 400, message: v});
   } else {
+    let time = new Date();
     let messageObj = {
       sender: req.body.number,
       message: req.body.message,
-      time: new Date()
+      time,
+      uid: time.getTime()
     };
     // Check for queue group name - if not found on req object, this is initial message - create new queue group
     if (req.body.queueGroup) {

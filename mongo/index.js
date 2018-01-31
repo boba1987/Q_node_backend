@@ -135,7 +135,7 @@ function findOneAndUpdate(filter, update, dbCollection, callback, options = {}) 
 function aggregate(dbCollection, sort, group, options, callback) {
   const collection = dbConnection.collection(dbCollection);
 
-   collection.aggregate([{ $match: { queueGroup: { $regex: new RegExp(options.filter) } } }, { $sort: sort }, { $group: group }]).skip(options.skip).limit(options.limit).toArray((err, result) => {
+   collection.aggregate([{ $match: { queueGroup: { $regex: new RegExp(options.filter) } } }, { $sort: sort }, { $group: group }]).sort({uid: -1}).skip(options.skip).limit(options.limit).toArray((err, result) => {
      if (err) {
        console.log('mongo aggregate error: ', err);
      }
