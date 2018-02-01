@@ -12,8 +12,6 @@ function generateQueueGroupName(name) {
 
   let generatedName = name + dateformat(currDate, '_HHMMss_ddmmyyyy');
 
-  console.log(generatedName);
-
   return generatedName;
 }
 
@@ -23,11 +21,22 @@ function getMessages(req) {
   let sort = {uid: 1};
   let filter = '';
 
+  // DB aggregate projection
+  const projection = {
+    _id: '$queueGroup',
+    message: {$last: '$message'},
+    queueType: {$last: '$queueType'},
+    time: {$last: '$time'},
+    sender: {$last: '$sender'},
+    queueGroup: {$last: '$queueGroup'},
+    uid: {$last: '$uid'}
+  };
+
   if (req.query.search) {
     filter = req.query.search;
   }
 
-  resolver.aggregate(req, 'messages', sort, {_id: '$queueGroup', message: {$last: '$message'}, queueType: {$last: '$queueType'}, time: {$last: '$time'}, sender: {$last: '$sender'}, queueGroup: {$last: '$queueGroup'}, uid: {$last: '$uid'}}, filter).then(messages => {
+  resolver.aggregate(req, 'messages', sort, projection, filter).then(messages => {
     mongo.find({}, 'queueGroups', function(queueGroups) {
       messages.items.map(message => { // Enhance each messsage with number of subscribers
         message.responseFrom = [];
