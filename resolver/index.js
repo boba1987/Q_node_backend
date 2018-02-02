@@ -22,7 +22,7 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
 
   // If there is parameter "search" on the request, do text search on DB
   if (req.query.search) {
-    filter['queueGroup'] = new RegExp(req.query.search);
+    filter['queueType'] = new RegExp(req.query.search);
   }
 
   // Get total number of pages

@@ -23,6 +23,8 @@ MongoClient.connect(url, function(err, db) {
   if (err) console.log(err);
   dbConnection = db;
   createTextIndex('messages', {queueGroup: 'text', message: 'text'});
+  createTextIndex('subscribers', {queueGroup: 'text', message: 'text'});
+  createTextIndex('queues', {queueGroup: 'text', message: 'text'});
 });
 
 // Inset into database
