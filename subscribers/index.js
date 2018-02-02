@@ -6,6 +6,30 @@ const bot = require('../bot');
 
 const subscribeSchema = require('../schemas/subscribers.json');
 
+module.exports = {
+  subscribe,
+  unsubscribe,
+  updateSubcribers
+}
+
+function updateSubcribers(status, queueType, sender) {
+  const deferred = q.defer();
+  // Find a number in subscribers collection and if found update to subscribed/unsubscribed
+  mongo.findOneAndUpdate({sender, queueType}, {$set: {status}}, 'subscribers', (updatedDoc) => {
+    // IF Document found and updated
+    if (updatedDoc.value) {
+      deferred.resolve(updatedDoc);
+    } else {
+      // Document not found, so make a newone in subscribers collection
+      mongo.insert({queueType, time: new Date(), sender, status}, 'subscribers', (result) => {
+        deferred.resolve(result);
+      });
+    }
+  })
+
+  return deferred.promise;
+}
+
 // Subscribe user to a specific group based on req.body.queue
 function subscribe(req) {
   console.log('Subscribe: ', req.body);
@@ -43,6 +67,7 @@ function subscribe(req) {
                 message: 'You have subscribed to ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
               }).then(() => {
                 console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
+                updateSubcribers('subscribed', req.body.queue, req.body.number);
                 deferred.resolve();
               });
             });
@@ -94,6 +119,7 @@ function unsubscribe(req) {
               message: 'You are unsubscribed from ' + req.body.queue + '. There are now ' + activeSubscribers + ' active subscribers.'
             }).then(() => {
               console.log(colors.green(new Date(), req.body.number + ' is unsubscribed from ' + req.body.queue));
+              updateSubcribers('unsubscribed', req.body.queue, req.body.number);
               deferred.resolve();
             });
           });
@@ -122,9 +148,4 @@ function unsubscribe(req) {
   }
 
   return deferred.promise;
-}
-
-module.exports = {
-  subscribe,
-  unsubscribe
 }
