@@ -230,6 +230,7 @@ app
   })
   .post('/subscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
     subscribers.subscribe(req).then(() => {
+      io.emit('subscribe', { get: '/subscribers' });
       res.sendStatus(200);
     }).catch(err => {
       res.status(err.status).send({message: err.message});
@@ -237,6 +238,7 @@ app
   })
   .post('/unsubscribe', passport.authenticate('jwt', {session: false}), (req, res) => {
     subscribers.unsubscribe(req).then(() => {
+      io.emit('subscribe', { get: '/subscribers' });
       res.sendStatus(200);
     }).catch(err => {
       res.status(err.status).send({message: err.message});
