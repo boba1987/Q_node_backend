@@ -244,6 +244,7 @@ app
   })
   .post('/message', passport.authenticate('jwt', {session: false}), (req, res) => {
     messages.save(req).then(() => {
+      io.emit('message', { get: '/messages' });
       res.sendStatus(200);
     }).catch(err => {
       res.sendStatus(err.status);
