@@ -11,4 +11,4 @@
 
 ### API calls specification:
 1. Install Postman
-2. Click the link: https://www.getpostman.com/collections/d21b037f3490f5c01955
+2. Click the link: https://www.getpostman.com/collections/bceb604a0061e54dcb67
