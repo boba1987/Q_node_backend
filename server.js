@@ -2,12 +2,14 @@ const appPort = 3000;
 
 const express = require('express');
 const app = express();
+
+var server = app.listen(appPort, () => {
+  console.log('App is running on port:', appPort);
+});
+
 const bodyParser = require('body-parser');
 const passport = require('passport');
-
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-
+const io = require('socket.io').listen(server);
 const fs = require('fs');
 
 const authentication = require('./authentication');
@@ -35,14 +37,11 @@ app
   .use(bodyParser.json()) // Parse application/json
   .use(bodyParser.text())
   .use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', config.allowOrigin);
+    res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
   });
-
-app.listen(appPort, () => {
-  console.log('App is running on port:', appPort);
-});
 
 // GET routes
 app
