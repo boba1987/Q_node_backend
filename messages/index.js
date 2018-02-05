@@ -91,7 +91,7 @@ function save(req) {
       // Find queue type in DB
       mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
-        if (queue) {
+        if (queue && queue.active) {
           let queueGroupName = generateQueueGroupName(queueType);
           // Save the message to DB - collection 'messages'
           messageObj.queueGroup = queueGroupName;
@@ -125,6 +125,15 @@ function save(req) {
                 console.log(colors.red('bot.createGroup err: ', err));
               });
             });
+          });
+        } else if (queue && !queue.active) {
+          // If queue is not active, send a message to sender
+          bot.sendMessage({
+            numbers: req.body.number,
+            message: 'This queue is not active.'
+          }).then(() => {
+            console.log(colors.red('Sending a message to inactive ' + queueType + ' queue'));
+            deferred.resolve();
           });
         } else {
           // Queue not found - send the alert message via bot
