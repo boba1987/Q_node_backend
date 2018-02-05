@@ -34,9 +34,9 @@ function sendMail(req) {
 
         // setup email data with unicode symbols
         let mailOptions = {
-            from: '"Fred Foo 👻" <medxq.info@gmail.com>', // sender address
+            from: '"MedxQ Info" <medxq.info@gmail.com>', // sender address
             to: 'sdjordjevic@razor.rs', // list of receivers
-            subject: 'Hello Alert✔', // Subject line
+            subject: 'Queue Alert', // Subject line
             text: 'Message: ' + doc.message + ' sent by ' + doc.sender + ' Alert: ' + req.body.alert,
             html: '<b>Message: </b>' + doc.message + ' sent by ' + doc.sender + ' <br/> <b>Alert: </b>' + req.body.alert// html body
         };
