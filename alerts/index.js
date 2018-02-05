@@ -13,34 +13,44 @@ function sendMail(req) {
   if (v) {
     deferred.reject({status: 400, message: v});
   } else {
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: 'medxq.info@gmail.com',
-            pass: 'medxqapp'
-        }
-    });
+    // Find a queue
+    mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
+      // If queue not found
+      if (!queue) {
+        console.log(req.body.queue + 'Queue not found!');
+      }
 
-    // setup email data with unicode symbols
-    let mailOptions = {
-        from: '"Fred Foo 👻" <medxq.info@gmail.com>', // sender address
-        to: 'sdjordjevic@razor.rs', // list of receivers
-        subject: 'Hello Alert✔', // Subject line
-        text: 'Hello world?', // plain text body
-        html: '<b>Hello world?</b>' // html body
-    };
+      // Find a message that created the alert
+      mongo.findOne({_id: new MongoDB.ObjectID(req.body._id)}, {}, 'alerts', (doc) => {
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: 'medxq.info@gmail.com',
+                pass: 'medxqapp'
+            }
+        });
 
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, (error) => {
-        if (error) {
-            return console.log(error);
-        }
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Fred Foo 👻" <medxq.info@gmail.com>', // sender address
+            to: 'sdjordjevic@razor.rs', // list of receivers
+            subject: 'Hello Alert✔', // Subject line
+            text: 'Message: ' + doc.message + ' sent by ' + doc.sender + ' Alert: ' + req.body.alert,
+            html: '<b>Message: </b>' + doc.message + ' sent by ' + doc.sender + ' <br/> <b>Alert: </b>' + req.body.alert// html body
+        };
 
-        console.log('sendMail', req.body);
-        deferred.resolve();
-    });
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error) => {
+            if (error) {
+                return console.log(error);
+            }
+
+            deferred.resolve();
+        });
+      })
+    })
   }
 
   return deferred.promise;
@@ -64,7 +74,7 @@ function sendSms(req) {
       mongo.findOne({_id: new MongoDB.ObjectID(req.body._id)}, {}, 'alerts', (doc) => {
         bot.sendMessage({
           numbers: queue.owner,
-          message: 'Message "' + doc.message + '" sent by ' + doc.sender + ' is sent to an empty ' + req.body.queue + ' queue'
+          message: 'Message "' + doc.message + '" sent by ' + doc.sender + ' Alert: ' + req.body.alert
         });
       })
       deferred.resolve();
