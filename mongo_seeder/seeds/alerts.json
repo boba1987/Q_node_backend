@@ -6,7 +6,8 @@
     "mail": "mail@mai.com",
     "message": "This is a list of duty hours, please check and and confitm DOB.",
     "alert": "Message sent to an empty queue.",
-    "messageId": "5a43c84e5bea65180ac99b97"
+    "messageId": "5a43c84e5bea65180ac99b97",
+    "owner": "+38163629739"
   },
   {
     "queue": "@cardiologist",
@@ -15,6 +16,7 @@
     "mail": "email@mail.com",
     "message": "Meeting in 10 mins.",
     "alert": "Queue has no subscibers.",
-    "messageId": "5a43c84e5bea65180ac99b98"
+    "messageId": "5a43c84e5bea65180ac99b98",
+    "owner": "+38163629739"
   }
 ]
