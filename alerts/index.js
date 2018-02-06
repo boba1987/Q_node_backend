@@ -37,8 +37,8 @@ function sendMail(req) {
             from: '"MedxQ Info" <medxq.info@gmail.com>', // sender address
             to: 'sdjordjevic@razor.rs', // list of receivers
             subject: 'Queue Alert', // Subject line
-            text: 'Message: ' + doc.message + ' sent by ' + doc.sender + ' Alert: ' + req.body.alert,
-            html: '<b>Message: </b>' + doc.message + ' sent by ' + doc.sender + ' <br/> <b>Alert: </b>' + req.body.alert// html body
+            text: 'Message: "' + doc.message + '", sent by ' + doc.sender + '. Alert: ' + req.body.alert,
+            html: '<b>Message: </b>"' + doc.message + '"<br/> <b>sent by</b>' + doc.sender + ' <br/> <b>Alert: </b>' + req.body.alert// html body
         };
 
         // send mail with defined transport object
