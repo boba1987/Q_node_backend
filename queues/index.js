@@ -75,6 +75,9 @@ function create(req) {
       fields.active = false;
       fields.time = new Date();
 
+      // Set inclusive/exclusive type of queue
+      fields.isInclusive = fields.queueTypeSelect.toLowerCase() == 'inclusive' ? true : false;
+
       if (typeof fields.allowedNumbersToSend == 'string' && fields.allowedNumbersToSend.length) {
         fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
           return item.trim();
