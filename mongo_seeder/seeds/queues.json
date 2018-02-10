@@ -8,7 +8,8 @@
     "allowedNumbersToSubscribe": ["+38163629739"],
     "allowedNumbersToSend": ["+38163629739"],
     "subscribed": [],
-    "active": true
+    "active": true,
+    "isInclusive": true
   },
   {
     "queueType": "@pediatrics",
@@ -19,7 +20,8 @@
     "allowedNumbersToSubscribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "allowedNumbersToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "subscribed": [],
-    "active": false
+    "active": false,
+    "isInclusive": true
   },
   {
     "queueType": "@oncologist",
@@ -30,7 +32,8 @@
     "allowedNumbersToSubscribe": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "allowedNumbersToSend": ["+38163629739", "+353866797308", "+35677069285", "+381631077091"],
     "subscribed": [],
-    "active": true
+    "active": true,
+    "isInclusive": true
   },
   {
     "queueType": "@alpha",
@@ -41,6 +44,7 @@
     "allowedNumbersToSubscribe": [],
     "allowedNumbersToSend": [],
     "subscribed": [],
-    "active": true
+    "active": true,
+    "isInclusive": true
   }
 ]

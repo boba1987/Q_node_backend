@@ -5,15 +5,8 @@ const messages = require('../schemas/messages.json');
 const validator = require('../validator');
 const colors = require('colors');
 const bot = require('../bot');
-const dateformat = require('dateformat');
 
-function generateQueueGroupName(name) {
-  const currDate = new Date();
-
-  let generatedName = name + dateformat(currDate, '_HHMMss_ddmmyyyy');
-
-  return generatedName;
-}
+const utils = require('./utils');
 
 function getMessages(req) {
   const deferred = q.defer();
@@ -92,7 +85,7 @@ function save(req) {
       mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
         if (queue && queue.active) {
-          let queueGroupName = generateQueueGroupName(queueType);
+          let queueGroupName = utils.generateQueueGroupName(queueType);
           // Save the message to DB - collection 'messages'
           messageObj.queueGroup = queueGroupName;
           messageObj.queueType = queueType;
@@ -110,7 +103,7 @@ function save(req) {
             mongo.insert(queueGroupObj, 'queueGroups', () => {
               // Send a message via bot
               bot.sendMessage({
-                numbers: queue.subscribed.toString().split(',').join(', '),
+                numbers: utils.isInclusive(queue, req.body.number),
                 message: req.body.message + '\n Message by ' + req.body.number,
                 queueGroup: queueGroupName
               }).then(() => {
