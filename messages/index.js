@@ -114,9 +114,11 @@ function save(req) {
                 message: req.body.message + '\n Message by ' + req.body.number,
                 queueGroup: queueGroupName
               }).then(() => {
+                let currentSubscriber = queue.subscribed.length <= 1 ? 'subscriber' : 'subscribers';
+
                 bot.sendMessage({
                   numbers: req.body.number,
-                  message: 'Message is forwarded to ' + queueType + ' queue.'
+                  message: 'A group message has been sent to the ' + queue.subscribed.length + ' current ' + currentSubscriber + ' to the ' + queueType + ' queue.'
                 }).then(() => {
                   console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.subscribed.toString().split(',').join(', ')));
                   deferred.resolve();
