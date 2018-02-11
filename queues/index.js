@@ -6,6 +6,7 @@ const MongoDB = require('mongodb');
 const formidable = require('formidable');
 const parser = require('../parser');
 const fs = require('fs');
+const utils = require('./utils');
 
 module.exports = {
   editStatus,
@@ -25,17 +26,6 @@ function editStatus(req) {
   }
 
   return deferred.promise;
-}
-
-function save(fields, deferred) {
-  const v = validator.isValid(fields, queuesSchema.create); // Validate request
-  if (v) {
-    deferred.reject({status: 400, message: v});
-  } else {
-    mongo.insert(fields, 'queues', (res) => {
-      deferred.resolve(res.ops[0]);
-    })
-  }
 }
 
 function create(req) {
@@ -94,7 +84,7 @@ function create(req) {
         fields.allowedNumbersToSubscribe = [];
       }
 
-      save(fields, deferred);
+      utils.save(fields, deferred);
     }).catch( err =>{
       deferred.reject({status: err.status, message: err.message});
     });
