@@ -87,6 +87,9 @@ function save(req) {
             if (req.body.message == utils.acknolegmentCommand) {
               // Get original message and send to owner
               utils.sendAckMessage(req, deferred, queueGroup[0].queueGroup);
+            } else {
+              // Old reponder but just a regular message
+              deferred.resolve()
             }
           }
         })

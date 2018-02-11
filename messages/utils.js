@@ -81,17 +81,15 @@ function isInclusive(queue, sender) {
 }
 
 function sendAckMessage(req, deferred, queueGroup) {
-  // If it is acknolegment message
-  if (req.body.message == acknolegmentCommand) {
-    // Get original message
-    getOriginalQueueGroupMessage(queueGroup).then((originalMsg) => {
-      // Send acknolegment message to queue group original message sender
-      bot.sendMessage({
-        numbers: queueGroup[0].owner,
-        message: req.body.number + ' Acknowledged the message "' + originalMsg.message + '"'
-      }).then(() => {
-        deferred.resolve();
-      })
+  // Get original message
+  getOriginalQueueGroupMessage(queueGroup).then((originalMsg) => {
+    console.log('getOriginalQueueGroupMessage found');
+    // Send acknolegment message to queue group original message sender
+    bot.sendMessage({
+      numbers: queueGroup.owner,
+      message: req.body.number + ' Acknowledged the message "' + originalMsg.message + '"'
+    }).then(() => {
+      deferred.resolve();
     })
-  }
+  })
 }
