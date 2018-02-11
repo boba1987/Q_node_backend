@@ -67,16 +67,36 @@ function save(req) {
       time,
       uid: time.getTime()
     };
+
     // Check for queue group name - if not found on req object, this is initial message - create new queue group
     if (req.body.queueGroup) {
       messageObj.queueGroup = req.body.queueGroup;
       messageObj.queueType = req.body.queueGroup.substr(0, req.body.queueGroup.indexOf('_'));
       // Save message to DB
       mongo.insert(messageObj, 'messages', () => {
-        // Update respone from filed of the queue group
-        mongo.update({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
-          deferred.resolve();
-        });
+        mongo.find({queueGroup: req.body.queueGroup}, 'queueGroups', (queueGroup) => {
+          // If response from number is not in responseFrom already
+          if (queueGroup[0].responseFrom.indexOf(req.body.number) == -1) {
+            // Update respone from filed of the queue group
+            mongo.findOneAndUpdate({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
+              // If it is acknolegment message
+              if (req.body.message == utils.acknolegment) {
+                // Get original message
+                utils.getOriginalQueueGroupMessage().then((originalMsg) => {
+                  // Send acknolegment message to queue group original message sender
+                  bot.sendMessage({
+                    numbers: queueGroup[0].owner,
+                    message: req.body.number + ' Acknowledged the message "' + originalMsg + '"'
+                  }).then(() => {
+                    deferred.resolve();
+                  })
+                })
+              }
+            });
+          } else {
+            deferred.resolve();
+          }
+        })
       });
     } else {
       // Get queue type
@@ -94,7 +114,8 @@ function save(req) {
             queueType,
             queueGroup: queueGroupName,
             responseFrom: [],
-            subscribers: queue.subscribed.toString().split(',')
+            subscribers: queue.subscribed.toString().split(','),
+            owner: req.body.number
           };
 
           // Saving message to DB
@@ -102,10 +123,12 @@ function save(req) {
             // Save new queue group to DB
             mongo.insert(queueGroupObj, 'queueGroups', () => {
               // Send a message via bot
+              console.log('sending the message', utils.PAobject);
               bot.sendMessage({
                 numbers: utils.isInclusive(queue, req.body.number),
                 message: req.body.message + '\n Message by ' + req.body.number,
-                queueGroup: queueGroupName
+                queueGroup: queueGroupName,
+                pa: utils.PAobject
               }).then(() => {
                 let currentSubscriber = queue.subscribed.length <= 1 ? 'subscriber' : 'subscribers';
 
