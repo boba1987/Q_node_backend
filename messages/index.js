@@ -79,22 +79,15 @@ function save(req) {
           if (queueGroup[0].responseFrom.indexOf(req.body.number) == -1) {
             // Update respone from filed of the queue group
             mongo.findOneAndUpdate({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
-              // If it is acknolegment message
-              if (req.body.message == utils.acknolegment) {
-                // Get original message
-                utils.getOriginalQueueGroupMessage().then((originalMsg) => {
-                  // Send acknolegment message to queue group original message sender
-                  bot.sendMessage({
-                    numbers: queueGroup[0].owner,
-                    message: req.body.number + ' Acknowledged the message "' + originalMsg + '"'
-                  }).then(() => {
-                    deferred.resolve();
-                  })
-                })
-              }
+              // Get original message and send to owner
+              utils.sendAckMessage(req, deferred, queueGroup[0].queueGroup);
             });
           } else {
-            deferred.resolve();
+            // If it is acknolegment message
+            if (req.body.message == utils.acknolegmentCommand) {
+              // Get original message and send to owner
+              utils.sendAckMessage(req, deferred, queueGroup[0].queueGroup);
+            }
           }
         })
       });

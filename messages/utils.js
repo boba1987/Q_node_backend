@@ -1,6 +1,7 @@
 const dateformat = require('dateformat');
 const q = require('q');
 const mongo = require('../mongo');
+const bot = require('../bot');
 
 const PAobject = [
     {
@@ -42,7 +43,8 @@ module.exports = {
   isInclusive,
   PAobject,
   acknolegmentCommand,
-  getOriginalQueueGroupMessage
+  getOriginalQueueGroupMessage,
+  sendAckMessage
 }
 
 // Get original queue group message
@@ -75,5 +77,21 @@ function isInclusive(queue, sender) {
   } else {
     // Number is either found in subscribers or queue is type of exclusive
     return numbersToSend
+  }
+}
+
+function sendAckMessage(req, deferred, queueGroup) {
+  // If it is acknolegment message
+  if (req.body.message == acknolegmentCommand) {
+    // Get original message
+    getOriginalQueueGroupMessage(queueGroup).then((originalMsg) => {
+      // Send acknolegment message to queue group original message sender
+      bot.sendMessage({
+        numbers: queueGroup[0].owner,
+        message: req.body.number + ' Acknowledged the message "' + originalMsg.message + '"'
+      }).then(() => {
+        deferred.resolve();
+      })
+    })
   }
 }
