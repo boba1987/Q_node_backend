@@ -80,13 +80,13 @@ function save(req) {
             // Update respone from filed of the queue group
             mongo.findOneAndUpdate({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
               // Get original message and send to owner
-              utils.sendAckMessage(req, deferred, queueGroup[0].queueGroup);
+              utils.sendAckMessage(req, deferred, queueGroup[0]);
             });
           } else {
             // If it is acknolegment message
             if (req.body.message == utils.acknolegmentCommand) {
               // Get original message and send to owner
-              utils.sendAckMessage(req, deferred, queueGroup[0].queueGroup);
+              utils.sendAckMessage(req, deferred, queueGroup[0]);
             } else {
               // Old reponder but just a regular message
               deferred.resolve()

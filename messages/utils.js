@@ -82,8 +82,8 @@ function isInclusive(queue, sender) {
 
 function sendAckMessage(req, deferred, queueGroup) {
   // Get original message
-  getOriginalQueueGroupMessage(queueGroup).then((originalMsg) => {
-    console.log('getOriginalQueueGroupMessage found');
+  console.log(new Date, '// Get original message');
+  getOriginalQueueGroupMessage(queueGroup.queueGroup).then((originalMsg) => {
     // Send acknolegment message to queue group original message sender
     bot.sendMessage({
       numbers: queueGroup.owner,
