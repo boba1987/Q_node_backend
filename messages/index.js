@@ -110,7 +110,7 @@ function save(req) {
             queueType,
             queueGroup: queueGroupName,
             responseFrom: [],
-            subscribers: queue.subscribed.toString().split(','),
+            subscribers: utils.isInclusive(queue, req.body.number).split(', '),
             owner: req.body.number
           };
 

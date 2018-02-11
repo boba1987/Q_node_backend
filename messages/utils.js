@@ -18,7 +18,7 @@ const PAobject = [
                 },
                 'cells': [
                     {
-                        'title' : 'Acknowledged',
+                        'title' : 'Acknowledge',
                         'cmd'   : 'Acknowledged',
                         'input' : 'false',
                         'link'  : '1',
@@ -76,7 +76,7 @@ function isInclusive(queue, sender) {
     return numbersToSend.toString().split(',').join(', ');
   } else {
     // Number is either found in subscribers or queue is type of exclusive
-    return numbersToSend
+    return numbersToSend.toString().split(',').join(', ');
   }
 }
 
