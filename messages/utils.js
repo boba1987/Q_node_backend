@@ -36,7 +36,7 @@ const PAobject = [
     }
 ];
 
-const acknolegmentCommand = 'Acknowledged';
+const acknolegmentCommand = '**ACKNOWLEDGED**';
 
 module.exports = {
   generateQueueGroupName,
