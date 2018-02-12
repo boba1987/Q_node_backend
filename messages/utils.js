@@ -3,6 +3,8 @@ const q = require('q');
 const mongo = require('../mongo');
 const bot = require('../bot');
 
+const acknolegmentCommand = '**ACKNOWLEDGED**';
+
 const PAobject = [
     {
         'id': '1',
@@ -13,20 +15,19 @@ const PAobject = [
         'rows': [
             {
                 'style': {
-                    'size': '1.00',
+                    'size': '1.25',
                     'bg_color': ''
                 },
                 'cells': [
                     {
                         'title' : 'Acknowledge',
-                        'cmd'   : 'Acknowledged',
+                        'cmd'   : acknolegmentCommand,
                         'input' : 'false',
-                        'link'  : '1',
                         'echo'  : 'true',
                         'style': {
                             'color'   : '#ffffff',
-                            'border'  : '#999999',
-                            'bg_color': '#999999',
+                            'border'  : '#6cbd43',
+                            'bg_color': '#6cbd43',
                             'width'   : '1'
                         }
                     }
@@ -35,8 +36,6 @@ const PAobject = [
         ]
     }
 ];
-
-const acknolegmentCommand = '**ACKNOWLEDGED**';
 
 module.exports = {
   generateQueueGroupName,
@@ -82,7 +81,9 @@ function isInclusive(queue, sender) {
 
 function sendAckMessage(req, deferred, queueGroup) {
   // Get original message
-  console.log(new Date, '// Get original message');
+  console.log(new Date, '// Get original message for sending ACK to initiator');
+  console.log('req.body ', req.body);
+  console.log('queueGroup ', queueGroup);
   getOriginalQueueGroupMessage(queueGroup.queueGroup).then((originalMsg) => {
     // Send acknolegment message to queue group original message sender
     bot.sendMessage({

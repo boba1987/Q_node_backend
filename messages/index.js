@@ -54,6 +54,7 @@ function getMessages(req) {
 
 // Save message received from the bot
 function save(req) {
+  console.log('calling save ', req.body);
   const deferred = q.defer();
   const v = validator.isValid(req, messages.message);
 
@@ -75,20 +76,27 @@ function save(req) {
       // Save message to DB
       mongo.insert(messageObj, 'messages', () => {
         mongo.find({queueGroup: req.body.queueGroup}, 'queueGroups', (queueGroup) => {
+          console.log('Found a group ', queueGroup);
           // If response from number is not in responseFrom already
           if (queueGroup[0].responseFrom.indexOf(req.body.number) == -1) {
+            console.log('Number not found in responseFrom');
             // Update respone from filed of the queue group
             mongo.findOneAndUpdate({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
-              // Get original message and send to owner
-              utils.sendAckMessage(req, deferred, queueGroup[0]);
+              // If it is acknolegment message
+              if (req.body.message == utils.acknolegmentCommand) {
+                // Get original message and send to owner
+                utils.sendAckMessage(req, deferred, queueGroup[0]);
+              }
             });
           } else {
             // If it is acknolegment message
             if (req.body.message == utils.acknolegmentCommand) {
+              console.log('req.body.message == utils.acknolegmentCommand', req.body.message);
               // Get original message and send to owner
               utils.sendAckMessage(req, deferred, queueGroup[0]);
             } else {
               // Old reponder but just a regular message
+              console.log('Just resolving');
               deferred.resolve()
             }
           }
