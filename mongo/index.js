@@ -14,7 +14,22 @@ module.exports = {
   createTextIndex,
   drop,
   findOneAndUpdate,
-  aggregate
+  aggregate,
+  deleteOne
+}
+
+// Usage: deleting document out of collection
+/*
+* Example usage: mongo.deleteOne({queueType: '@cardiologists'}, options = {}, dbCollection, callback);
+* */
+function deleteOne(filter, options = {}, dbCollection, callback) {
+    const collection = dbConnection.collection(dbCollection);
+
+    collection.deleteOne(filter, options, () => {
+      if(callback) {
+        callback()
+      }
+    })
 }
 
 
