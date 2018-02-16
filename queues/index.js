@@ -3,14 +3,34 @@ const validator = require('../validator');
 const queuesSchema = require('../schemas/queues.json');
 const mongo = require('../mongo');
 const MongoDB = require('mongodb');
-const formidable = require('formidable');
-const parser = require('../parser');
-const fs = require('fs');
 const utils = require('./utils');
 
 module.exports = {
   editStatus,
-  create
+  create,
+  edit
+};
+
+// Usage: editing existing queues
+function edit(req) {
+    const deferred = q.defer();
+
+    // Create edited queue
+    create(req).then((queue) => {
+        // Delete edited queue
+        mongo.findOne({_id: new MongoDB.ObjectID(queue.id)}, {}, 'queues', (doc) => {
+            // Queue is found
+            if (doc) {
+                // Create edited queue
+                mongo.deleteOne({_id: new MongoDB.ObjectID(doc._id)}, {}, 'queues', () => {
+                    delete queue.id;
+                    deferred.resolve(queue);
+                });
+            }
+        });
+    });
+
+    return deferred.promise;
 }
 
 function editStatus(req) {
@@ -30,66 +50,11 @@ function editStatus(req) {
 
 function create(req) {
   const deferred = q.defer();
-  const form = new formidable.IncomingForm();
-  form.uploadDir = './tmp';
-  const allowedFileFields = ['allowedNumbersToSend', 'allowedNumbersToSubscribe'];
 
-  form.parse(req, function (err, fields, files) {
-    let queue = [];
-    for (let key in files) {
-      // Check if file is type 'text/csv'
-      if (files[key].type != 'text/csv') {
-        deferred.reject({status: 400, message: 'File ' + files[key].name + ' is not type of csv! Plese, upload csv format file.' });
-      } else if ( allowedFileFields.indexOf(key) == -1 ) { // If there is a file on field that is not allowed
-        deferred.reject({status: 400, message: 'Field ' + key + ' is not allowed! Allowed file fields are ' + allowedFileFields.toString() });
-      } else {
-        queue.push(parser.csv(files[key].path));
-        // Remove file from ./tmp
-        fs.unlinkSync('./' + files[key].path);
-      }
-    }
-
-    q.all(
-      queue
-    ).then(parsed => {
-      let index = 0;
-
-      for (let key in files) {
-        fields[key] = parsed[index]; // Enhance fields object with allowedNumbersToSend/allowedNumbersToSubscribe
-        index++;
-      }
-
-      // Enhance fields object with arrays to contain status, responseFrom and subscribers
-      fields.responseFrom = [];
-      fields.subscribed = [];
-      fields.active = false;
-      fields.time = new Date();
-
-      // Set inclusive/exclusive type of queue
-      if (fields.queueTypeSelect) {
-        fields.isInclusive = fields.queueTypeSelect.toLowerCase() == 'inclusive' ? true : false;
-      }
-
-      if (typeof fields.allowedNumbersToSend == 'string' && fields.allowedNumbersToSend.length) {
-        fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
-          return item.trim();
-        });
-      } else {
-        fields.allowedNumbersToSend = [];
-      }
-
-      if (typeof fields.allowedNumbersToSubscribe == 'string' && fields.allowedNumbersToSubscribe) {
-        fields.allowedNumbersToSubscribe = fields.allowedNumbersToSubscribe.split(',').map(function(item) {
-          return item.trim();
-        });
-      } else {
-        fields.allowedNumbersToSubscribe = [];
-      }
-
+  utils.extractFields(req).then((fields) => {
       utils.save(fields, deferred);
-    }).catch( err =>{
-      deferred.reject({status: err.status, message: err.message});
-    });
+  }).catch(err => {
+      deferred.reject({status: err.status});
   });
 
   return deferred.promise;
