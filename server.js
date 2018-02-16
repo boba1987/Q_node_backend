@@ -3,7 +3,7 @@ const appPort = 3000;
 const express = require('express');
 const app = express();
 
-var server = app.listen(appPort, () => {
+const server = app.listen(appPort, () => {
   console.log('App is running on port:', appPort);
 });
 
@@ -252,3 +252,10 @@ app
       res.sendStatus(err.status);
     })
   })
+  .post('/queues/edit', (req, res) => {
+    queues.edit(req).then((queue) => {
+      res.status(200).send({message: queue});
+    }).catch(err => {
+        res.status(err.status).send({message: err.message});
+    })
+  });
