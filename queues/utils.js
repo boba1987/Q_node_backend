@@ -64,7 +64,7 @@ function extractFields(req) {
                 fields.isInclusive = fields.queueTypeSelect.toLowerCase() == 'inclusive' ? true : false;
             }
 
-            if (typeof fields.allowedNumbersToSend == 'string' && fields.allowedNumbersToSubscribe) {
+            if (typeof fields.allowedNumbersToSend == 'string' && fields.allowedNumbersToSend) {
                 fields.allowedNumbersToSend = fields.allowedNumbersToSend.split(',').map(function(item) {
                     return item.trim();
                 });
@@ -82,7 +82,7 @@ function extractFields(req) {
 
             deferred.resolve(fields);
         }).catch( err =>{
-            console.log(err)
+            console.log(err);
             deferred.reject({status: 400});
         });
     });

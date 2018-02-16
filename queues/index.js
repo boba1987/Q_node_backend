@@ -15,19 +15,22 @@ module.exports = {
 function edit(req) {
     const deferred = q.defer();
 
-    // Create edited queue
-    create(req).then((queue) => {
-        // Delete edited queue
-        mongo.findOne({_id: new MongoDB.ObjectID(queue.id)}, {}, 'queues', (doc) => {
-            // Queue is found
+    utils.extractFields(req).then(fields => {
+        console.log(fields)
+        mongo.findOne({_id: new MongoDB.ObjectID(fields.id)}, {}, 'queues', (doc) => {
+            // Document found
             if (doc) {
-                // Create edited queue
-                mongo.deleteOne({_id: new MongoDB.ObjectID(doc._id)}, {}, 'queues', () => {
-                    delete queue.id;
-                    deferred.resolve(queue);
-                });
+                // Update the document
+                mongo.findOneAndUpdate({_id: new MongoDB.ObjectID(fields.id)}, {$set: fields}, 'queues', (doc) => {
+                    deferred.resolve(doc.value);
+                })
+            } else {
+                deferred.reject({status: 400, message: 'Queue not found'});
             }
-        });
+        })
+    }).catch(err => {
+        console.log(err);
+       deferred.reject();
     });
 
     return deferred.promise;

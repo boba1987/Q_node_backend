@@ -252,9 +252,9 @@ app
       res.sendStatus(err.status);
     })
   })
-  .post('/queues/edit', (req, res) => {
+  .post('/queues/edit', passport.authenticate('jwt', {session: false}), (req, res) => {
     queues.edit(req).then((queue) => {
-      res.status(200).send({message: queue});
+      res.status(200).send(queue);
     }).catch(err => {
         res.status(err.status).send({message: err.message});
     })
