@@ -2,7 +2,7 @@
   "hospitalName":"Victoria eyes and ear hospital",
   "email":"hospital@hospital.comm",
   "telephone":"+139489148",
-  "mongo":"mongodb://boba1987:bobiska87@ds239127.mlab.com:39127/medexq",
+  "mongo":"mongodb://localhost:27017/medexQ",
   "tokenExpiration":6000000000,
   "pageSize":10,
   "allowOrigin": "http://localhost:4200"

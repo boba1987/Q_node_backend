@@ -5,6 +5,7 @@ const messages = require('../schemas/messages.json');
 const validator = require('../validator');
 const colors = require('colors');
 const bot = require('../bot');
+const alerts = require('../alerts');
 
 const utils = require('./utils');
 
@@ -31,9 +32,9 @@ function getMessages(req) {
 
   resolver.aggregate(req, 'messages', sort, projection, filter).then(messages => {
     mongo.find({}, 'queueGroups', function(queueGroups) {
-      messages.items.map(message => { // Enhance each messsage with number of subscribers
+      messages.items.map(message => { // Enhance each message with number of subscribers
         message.responseFrom = [];
-        queueGroups.map(queue => { // Map trough queues to attahch subscribers to response and attach whoever replied
+        queueGroups.map(queue => { // Map trough queues to attach subscribers to response and attach whoever replied
           if (message.queueGroup == queue.queueGroup) {
             message.subscribers = queue.subscribers;
             queue.responseFrom.map(replied => { // Attach whoever replied
@@ -43,7 +44,7 @@ function getMessages(req) {
             })
           }
         })
-      })
+      });
 
       deferred.resolve(messages);
     });
@@ -69,6 +70,14 @@ function save(req) {
       uid: time.getTime()
     };
 
+    // Check alert criteria and perform an action if required
+    // Get queue type
+    let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
+    alerts.checkAlerts(queueType).then(alert => {
+      console.log('************has alert!!!!!!', alert);
+    });
+
+
     // Check for queue group name - if not found on req object, this is initial message - create new queue group
     if (req.body.queueGroup) {
       messageObj.queueGroup = req.body.queueGroup;
@@ -80,22 +89,22 @@ function save(req) {
           // If response from number is not in responseFrom already
           if (queueGroup[0].responseFrom.indexOf(req.body.number) == -1) {
             console.log('Number not found in responseFrom');
-            // Update respone from filed of the queue group
+            // Update response from filed of the queue group
             mongo.findOneAndUpdate({queueGroup: req.body.queueGroup}, {$push: {responseFrom: req.body.number}}, 'queueGroups', () => {
-              // If it is acknolegment message
+              // If it is acknowledgement message
               if (req.body.message == utils.acknolegmentCommand) {
                 // Get original message and send to owner
                 utils.sendAckMessage(req, deferred, queueGroup[0]);
               }
             });
           } else {
-            // If it is acknolegment message
+            // If it is acknowledgement message
             if (req.body.message == utils.acknolegmentCommand) {
               console.log('req.body.message == utils.acknolegmentCommand', req.body.message);
               // Get original message and send to owner
               utils.sendAckMessage(req, deferred, queueGroup[0]);
             } else {
-              // Old reponder but just a regular message
+              // Old responder but just a regular message
               console.log('Just resolving');
               deferred.resolve()
             }
@@ -103,8 +112,6 @@ function save(req) {
         })
       });
     } else {
-      // Get queue type
-      let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
       // Find queue type in DB
       mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
