@@ -9,5 +9,5 @@
     "_id": {"type": "string"},
     "messageId": {"type": "string"}
   },
-  "required": ["queue", "sender", "mail", "alert", "_id", "messageId"]
+  "required": ["queue", "sender", "alert", "_id", "messageId"]
 }

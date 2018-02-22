@@ -215,7 +215,9 @@ function sendSms(req) {
         deferred.reject({status: 400, message: v});
     } else {
         // Find a queue
-        mongo.findOne({queueType: req.body.queue}, {}, 'queues', (queue) => {
+        // Extract queue type out of queue group name
+        let queueTypeFormated = req.body.queue.substr(0, req.body.queue.indexOf('_'));
+        mongo.findOne({queueType: queueTypeFormated}, {}, 'queueGroups', (queue) => {
             // If queue not found
             if (!queue) {
                 console.log(req.body.queue + 'Queue not found!');
