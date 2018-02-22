@@ -58,6 +58,7 @@ function save(req) {
   console.log('calling save ', req.body);
   const deferred = q.defer();
   const v = validator.isValid(req, messages.message);
+  let hasAlert;
 
   if (v) {
     deferred.reject({status: 400, message: v});
@@ -76,7 +77,10 @@ function save(req) {
     alerts.checkAlerts(queueType).then(alert => {
       // There is an alert
       if (alert.hasAlert && alert.alert.typeCriteria === '2') {
-          let message = alert.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
+        // Mark message has alert
+        hasAlert = 'Queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
+
+        let message = alert.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
         // If owner should be messaged
         if (alert.alert.messageOwner) {
             alerts.alertActions[alert.alertType](alert.queue, message);
@@ -84,6 +88,8 @@ function save(req) {
 
         // Escalate alert
         alerts.escalateAlert(alert.alert, alert.queue, message);
+
+        // Save alert to db
       }
     });
 
@@ -93,9 +99,12 @@ function save(req) {
       messageObj.queueGroup = req.body.queueGroup;
       messageObj.queueType = req.body.queueGroup.substr(0, req.body.queueGroup.indexOf('_'));
       // Save message to DB
-      mongo.insert(messageObj, 'messages', () => {
+      mongo.insert(messageObj, 'messages', message => {
         mongo.find({queueGroup: req.body.queueGroup}, 'queueGroups', (queueGroup) => {
-          console.log('Found a group ', queueGroup);
+            // Save alert to DB if triggered
+            if (hasAlert) {
+                alerts.save(queueGroup, req.body.number, message.ops[0], hasAlert);
+            }
           // If response from number is not in responseFrom already
           if (queueGroup[0].responseFrom.indexOf(req.body.number) == -1) {
             console.log('Number not found in responseFrom');
@@ -140,7 +149,11 @@ function save(req) {
           };
 
           // Saving message to DB
-          mongo.insert(messageObj, 'messages', () => {
+          mongo.insert(messageObj, 'messages', message => {
+              console.log(message);
+              if (hasAlert) {
+                  alerts.save(queueGroupObj, req.body.number, message.ops[0], hasAlert);
+              }
             // Save new queue group to DB
             mongo.insert(queueGroupObj, 'queueGroups', () => {
               // Send a message via bot

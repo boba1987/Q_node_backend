@@ -20,7 +20,29 @@ module.exports = {
     sendSms,
     checkAlerts,
     alertActions,
-    escalateAlert
+    escalateAlert,
+    save
+}
+
+// Store alert to db
+function save(queue, sender, message, alert) {
+    console.log('Storing alert');
+    const deferred = q.defer();
+
+    mongo.insert({
+        queue: queue.queueGroup,
+        time: new Date,
+        sender: message.sender,
+        message: message.message,
+        messageId: message._id,
+        owner: queue.owner,
+        email: '',
+        alert
+    }, 'alerts', () => {
+        deferred.resolve();
+    });
+
+    return deferred.promise;
 }
 
 // Alert queue owner
