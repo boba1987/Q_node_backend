@@ -8,23 +8,26 @@ const nodemailer = require('nodemailer');
 const emailValidator = require('email-validator');
 
 const alertTypeCriteria = {
-    1: 'Minimum number of subscribers'
-}
+    2: 'Minimum number of subscribers on message received'
+};
 
 const alertActions = {
-    1: AlertQueueOwnerByMessage
+    2: AlertQueueOwnerByMessage
 };
 
 module.exports = {
     sendMail,
     sendSms,
     checkAlerts,
-    checkMinimumSubscribers
+    alertActions,
+    escalateAlert
 }
 
 // Alert queue owner
 function AlertQueueOwnerByMessage(queue, message) {
+    console.log('Sending alert: ', message);
     const deferred = q.defer();
+
     bot.sendMessage({
         "numbers": queue.owner,
         "message": message
@@ -37,6 +40,58 @@ function AlertQueueOwnerByMessage(queue, message) {
     return deferred.promise;
 };
 
+function escalateAlert(alert, queue, message) {
+    console.log('Escalating alert');
+    const deferred = q.defer();
+    // If escalation email or number is set
+    if (emailValidator.validate(queue.queueEscalation)) {
+        console.log('Escalating alert - email');
+        // Send an email
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: 'medxq.info@gmail.com',
+                pass: 'medxqapp'
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"MedxQ Info" <medxq.info@gmail.com>', // sender address
+            to: queue.queueEscalation, // list of receivers
+            subject: 'Queue Alert', // Subject line
+            text: message
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error) => {
+            if (error) {
+                deferred.reject()
+                return console.log('transporter.sendMail: ', error);
+            }
+
+            deferred.resolve();
+        });
+    } else {
+        console.log('Escalating alert - message');
+        // Send a message to escalation number only if queue owner and escalation numbers are not equal
+        if (queue.queueEscalation !== queue.owner) {
+            // Send a message via bot
+            bot.sendMessage({
+                numbers: queue.queueEscalation,
+                message
+            }).then(() => {
+                console.log('Escalating alert - message sent');
+                deferred.resolve();
+            })
+        }
+    }
+
+    return deferred.promise;
+}
+
 // Check for if some alert criteria should be triggered
 function checkAlerts(queue) {
     const deferred = q.defer();
@@ -46,7 +101,7 @@ function checkAlerts(queue) {
         checkMinimumSubscribers(queue).then(alert => {
             // If alert true, trigger appropriate action
             if (alert) {
-                deferred.resolve(queue);
+                deferred.resolve({hasAlert: true, alertType: alert.typeCriteria, queue, alert});
             } else {
                 deferred.resolve(false);
             }
@@ -63,12 +118,10 @@ function checkMinimumSubscribers(queue) {
 
     if (Alerts) {
         Alerts.map((alert, index) => {
-            // loop trough alerts and check if some criteria is fulfilled
-            if (alert.typeCriteria == 1 || alert.type == alertTypeCriteria[1]) {
-                // Check if there is a minimum number of subscribers on queue
-                if (queue.subscribed.length < parseInt(alert.minSubscribers, 10)) {
-                    deferred.resolve(true);
-                }
+            // Loop trough alerts and check if some criteria is fulfilled
+            // Check if there is a minimum number of subscribers on queue
+            if (queue.subscribed.length < parseInt(alert.minSubscribers, 10)) {
+                deferred.resolve(alert);
             }
 
             if (Alerts.length == index+1) {
@@ -152,7 +205,7 @@ function sendSms(req) {
                     numbers: queue.owner,
                     message: 'Message "' + doc.message + '" sent by ' + doc.sender + ' Alert: ' + req.body.alert
                 });
-            })
+            });
             deferred.resolve();
         })
     }

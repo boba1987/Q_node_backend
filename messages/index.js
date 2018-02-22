@@ -74,7 +74,17 @@ function save(req) {
     // Get queue type
     let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
     alerts.checkAlerts(queueType).then(alert => {
-      console.log('************has alert!!!!!!', alert);
+      // There is an alert
+      if (alert.hasAlert && alert.alert.typeCriteria === '2') {
+          let message = alert.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
+        // If owner should be messaged
+        if (alert.alert.messageOwner) {
+            alerts.alertActions[alert.alertType](alert.queue, message);
+        }
+
+        // Escalate alert
+        alerts.escalateAlert(alert.alert, alert.queue, message);
+      }
     });
 
 
