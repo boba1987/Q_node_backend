@@ -7,10 +7,6 @@ const MongoDB = require('mongodb');
 const nodemailer = require('nodemailer');
 const emailValidator = require('email-validator');
 
-const alertTypeCriteria = {
-    2: 'Minimum number of subscribers on message received'
-};
-
 const alertActions = {
     2: AlertQueueOwnerByMessage
 };
@@ -21,7 +17,21 @@ module.exports = {
     checkAlerts,
     alertActions,
     escalateAlert,
-    save
+    save,
+    shouldTriggerAlert
+}
+
+// Checks if alert should be triggered based on time
+function shouldTriggerAlert(alert) {
+    let time = new Date().getHours();
+
+    if (parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) < time && parseInt(alert.timeHourStart, 10) < parseInt(alert.timeHourStop, 10)) {
+        return true;
+    } else if (parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) > time && parseInt(alert.timeHourStart, 10) > parseInt(alert.timeHourStop, 10)) {
+        return true;
+    }
+
+    return false;
 }
 
 // Store alert to db
@@ -120,10 +130,10 @@ function checkAlerts(queue) {
 
     mongo.findOne({queueType: queue}, {}, 'queues', (queue) => {
         // Check for minimum number of subscribers
-        checkMinimumSubscribers(queue).then(alert => {
+        checkMinimumSubscribers(queue).then(alerts => {
             // If alert true, trigger appropriate action
-            if (alert) {
-                deferred.resolve({hasAlert: true, alertType: alert.typeCriteria, queue, alert});
+            if (alerts) {
+                deferred.resolve({hasAlert: true, queue, alerts});
             } else {
                 deferred.resolve(false);
             }
@@ -137,21 +147,22 @@ function checkAlerts(queue) {
 function checkMinimumSubscribers(queue) {
     const deferred = q.defer();
     let Alerts = JSON.parse(queue.alerts);
+    let TriggeredAlerts = [];
 
     if (Alerts) {
         Alerts.map((alert, index) => {
             // Loop trough alerts and check if some criteria is fulfilled
             // Check if there is a minimum number of subscribers on queue
             if (queue.subscribed.length < parseInt(alert.minSubscribers, 10)) {
-                deferred.resolve(alert);
+                TriggeredAlerts.push(alert);
             }
 
             if (Alerts.length == index+1) {
-                deferred.resolve(false);
+                deferred.resolve(TriggeredAlerts);
             }
         });
     } else {
-        deferred.resolve(false);
+        deferred.resolve([]);
     }
 
     return deferred.promise;

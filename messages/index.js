@@ -74,22 +74,31 @@ function save(req) {
     // Check alert criteria and perform an action if required
     // Get queue type
     let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
-    alerts.checkAlerts(queueType).then(alert => {
+    alerts.checkAlerts(queueType).then(alertsRes => {
       // There is an alert
-      if (alert.hasAlert && alert.alert.typeCriteria === '2') {
-        // Mark message has alert
-        hasAlert = 'Queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
+      if (alertsRes.hasAlert) {
+          alertsRes.alerts.map(alert => {
+            // Check if alert should be triggered
+            if (!alerts.shouldTriggerAlert(alert)) {
+                return false;
+            }
 
-        let message = alert.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.alert.minSubscribers + ', Subscribed: ' + alert.queue.subscribed.length;
-        // If owner should be messaged
-        if (alert.alert.messageOwner) {
-            alerts.alertActions[alert.alertType](alert.queue, message);
-        }
+            // Mark message has alert
+            hasAlert = 'Queue has less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
 
-        // Escalate alert
-        alerts.escalateAlert(alert.alert, alert.queue, message);
+            let message = alertsRes.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
+            // If owner should be messaged
+            if (alert.messageOwner) {
+                alerts.alertActions[alert.typeCriteria](alertsRes.queue, message).then(() => {
+                    console.log('alert.messageOwner done');
+                }).catch(err => {
+                   console.log(colors.red('alert.messageOwner err: ', err));
+                });
+            }
 
-        // Save alert to db
+            // Escalate alert
+            alerts.escalateAlert(alert, alertsRes.queue, message);
+        });
       }
     });
 
@@ -150,7 +159,6 @@ function save(req) {
 
           // Saving message to DB
           mongo.insert(messageObj, 'messages', message => {
-              console.log(message);
               if (hasAlert) {
                   alerts.save(queueGroupObj, req.body.number, message.ops[0], hasAlert);
               }
