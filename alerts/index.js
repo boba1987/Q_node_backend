@@ -27,8 +27,12 @@ function shouldTriggerAlert(alert) {
 
     if (parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) < time && parseInt(alert.timeHourStart, 10) < parseInt(alert.timeHourStop, 10)) {
         return true;
-    } else if (parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) > time && parseInt(alert.timeHourStart, 10) > parseInt(alert.timeHourStop, 10)) {
-        return true;
+    } else if (parseInt(alert.timeHourStart, 10) > parseInt(alert.timeHourStop, 10)) {
+        if (time < parseInt(alert.timeHourStop, 10) && parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) > time ) {
+            return true;
+        } else if (time > parseInt(alert.timeHourStart, 10) && parseInt(alert.timeHourStart, 10) < time && parseInt(alert.timeHourStop, 10) < time ) {
+            return true;
+        }
     }
 
     return false;
