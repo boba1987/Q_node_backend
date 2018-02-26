@@ -78,8 +78,12 @@ function save(req) {
       // There is an alert
       if (alertsRes.hasAlert) {
           alertsRes.alerts.map(alert => {
-            // Check if alert should be triggered
-            if (!alerts.shouldTriggerAlert(alert)) {
+            // Check if alert should be triggered based on hours time span
+            if (!alerts.shouldTriggerAlert(parseInt(alert.timeHourStart, 10), parseInt(alert.timeHourStop, 10), new Date().getHours())) {
+                return false;
+            }
+            // Check if alert should be triggered based on days of the week time span
+            if (!alerts.shouldTriggerAlert(parseInt(alert.dayOfWeekFrom, 10), parseInt(alert.dayOfWeekTo, 10), new Date().getDay())) {
                 return false;
             }
 

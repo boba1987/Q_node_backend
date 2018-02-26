@@ -19,23 +19,26 @@ module.exports = {
     escalateAlert,
     save,
     shouldTriggerAlert
-}
+};
 
-// Checks if alert should be triggered based on time
-function shouldTriggerAlert(alert) {
-    let time = new Date().getHours();
-
-    if (parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) < time && parseInt(alert.timeHourStart, 10) < parseInt(alert.timeHourStop, 10)) {
+// Compare start and stop time
+function checkTimeSpan(start, stop, time) {
+    if (start <= time && stop >= time && start <= stop) {
         return true;
-    } else if (parseInt(alert.timeHourStart, 10) > parseInt(alert.timeHourStop, 10)) {
-        if (time < parseInt(alert.timeHourStop, 10) && parseInt(alert.timeHourStart, 10) > time && parseInt(alert.timeHourStop, 10) > time ) {
+    } else if (start > stop) {
+        if (time <= stop && start >= time && stop >= time ) {
             return true;
-        } else if (time > parseInt(alert.timeHourStart, 10) && parseInt(alert.timeHourStart, 10) < time && parseInt(alert.timeHourStop, 10) < time ) {
+        } else if (time >= start && stop <= time ) {
             return true;
         }
     }
 
     return false;
+}
+
+// Checks if alert should be triggered based on time
+function shouldTriggerAlert(start, stop, time) {
+    return checkTimeSpan(start, stop, time);
 }
 
 // Store alert to db

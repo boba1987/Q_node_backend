@@ -16,7 +16,6 @@ function edit(req) {
     const deferred = q.defer();
 
     utils.extractFields(req).then(fields => {
-        console.log(fields)
         mongo.findOne({_id: new MongoDB.ObjectID(fields.id)}, {}, 'queues', (doc) => {
             // Document found
             if (doc) {
