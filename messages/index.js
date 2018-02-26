@@ -40,28 +40,32 @@ function getMessages(req) {
             from: moment(moment().subtract(1, 'months').startOf('month')).format('YYYY-MM-DD'),
             to: moment(moment().subtract(1, 'months').endOf('month')).format('YYYY-MM-DD')
         },
+        previousYear: {
+            from: moment(moment().subtract(1, 'year').startOf('year')).format('YYYY-MM-DD'),
+            to: moment(moment().subtract(1, 'year').endOf('year')).format('YYYY-MM-DD')
+        },
         last15Minutes: {
-            from: moment(moment().subtract(15, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(15, 'minutes')),
             to: new Date().toJSON()
         },
         last60Minutes: {
-            from: moment(moment().subtract(60, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(60, 'minutes')),
             to: new Date().toJSON()
         },
         last4Hours: {
-            from: moment(moment().subtract(4, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(4, 'hours')),
             to: new Date().toJSON()
         },
         last24Hours: {
-            from: moment(moment().subtract(24, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(24, 'hours')),
             to: new Date().toJSON()
         },
         last7Days: {
-            from: moment(moment().subtract(7, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(7, 'days')),
             to: new Date().toJSON()
         },
         last30Days: {
-            from: moment(moment().subtract(30, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
+            from: moment(moment().subtract(30, 'days')),
             to: new Date().toJSON()
         }
     };
@@ -87,6 +91,13 @@ function getMessages(req) {
       $match: {time: { $gte: new Date('2017-01-01'), $lte: new Date() }}
   };
 
+  // Set time based filter
+    if (req.query.filter) {
+        match['$match']['time']['$gte'] = new Date(timeBasedQueries[req.query.filter].from);
+        match['$match']['time']['$lte'] = new Date(timeBasedQueries[req.query.filter].to);
+    }
+
+  // Set search filter
   if (req.query.search) {
     filter = req.query.search;
   }
