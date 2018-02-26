@@ -148,48 +148,60 @@ function save(req) {
       mongo.findOne({queueType}, {}, 'queues', (queue) => {
         // Queue found, send a request to the bot to create new queue group and save the message
         if (queue && queue.active) {
-          let queueGroupName = utils.generateQueueGroupName(queueType);
-          // Save the message to DB - collection 'messages'
-          messageObj.queueGroup = queueGroupName;
-          messageObj.queueType = queueType;
-
-          let queueGroupObj = {
-            queueType,
-            queueGroup: queueGroupName,
-            responseFrom: [],
-            subscribers: utils.isInclusive(queue, req.body.number).split(','),
-            owner: req.body.number
-          };
-
-          // Saving message to DB
-          mongo.insert(messageObj, 'messages', message => {
-              if (hasAlert) {
-                  alerts.save(queueGroupObj, req.body.number, message.ops[0], hasAlert);
-              }
-            // Save new queue group to DB
-            mongo.insert(queueGroupObj, 'queueGroups', () => {
-              // Send a message via bot
-              console.log('sending the message', utils.PAobject);
-              bot.sendMessage({
-                numbers: utils.isInclusive(queue, req.body.number),
-                message: req.body.message + '\n Message by ' + req.body.number,
-                queueGroup: queueGroupName,
-                pa: utils.PAobject
-              }).then(() => {
-                let currentSubscriber = queue.subscribed.length <= 1 ? 'subscriber' : 'subscribers';
-
+            // Check if number is allowed to send
+            if ((queue.allowedNumbersToSend.indexOf(req.body.number) == -1)) {
+                // Send warning that number is not allowed to subscribe
                 bot.sendMessage({
-                  numbers: req.body.number,
-                  message: 'A group message has been sent to the ' + queue.subscribed.length + ' current ' + currentSubscriber + ' to the ' + queueType + ' queue.'
+                    numbers: req.body.number,
+                    message: 'Your number ' + req.body.number + ' does not have permission to send a message to the ' + queue.queueType + '. ' + queue.queueType + ' queue is owned by ' + queue.owner
                 }).then(() => {
-                  console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.subscribed.toString().split(',').join(', ')));
-                  deferred.resolve();
+                    deferred.resolve();
+                    console.log(colors.red(new Date(), req.body.number + 'is Not allowed to send a message to the ' + queue.queueType));
                 });
-              }).catch(err => {
-                console.log(colors.red('bot.createGroup err: ', err));
-              });
-            });
-          });
+            } else {
+                let queueGroupName = utils.generateQueueGroupName(queueType);
+                // Save the message to DB - collection 'messages'
+                messageObj.queueGroup = queueGroupName;
+                messageObj.queueType = queueType;
+
+                let queueGroupObj = {
+                    queueType,
+                    queueGroup: queueGroupName,
+                    responseFrom: [],
+                    subscribers: utils.isInclusive(queue, req.body.number).split(','),
+                    owner: req.body.number
+                };
+
+                // Saving message to DB
+                mongo.insert(messageObj, 'messages', message => {
+                    if (hasAlert) {
+                        alerts.save(queueGroupObj, req.body.number, message.ops[0], hasAlert);
+                    }
+                    // Save new queue group to DB
+                    mongo.insert(queueGroupObj, 'queueGroups', () => {
+                        // Send a message via bot
+                        console.log('sending the message', utils.PAobject);
+                        bot.sendMessage({
+                            numbers: utils.isInclusive(queue, req.body.number),
+                            message: req.body.message + '\n Message by ' + req.body.number,
+                            queueGroup: queueGroupName,
+                            pa: utils.PAobject
+                        }).then(() => {
+                            let currentSubscriber = queue.subscribed.length <= 1 ? 'subscriber' : 'subscribers';
+
+                            bot.sendMessage({
+                                numbers: req.body.number,
+                                message: 'A group message has been sent to the ' + queue.subscribed.length + ' current ' + currentSubscriber + ' to the ' + queueType + ' queue.'
+                            }).then(() => {
+                                console.log(colors.green('Message: "' + req.body.message + '" sent to group ' + queueGroupName + ', subscribers:' + queue.subscribed.toString().split(',').join(', ')));
+                                deferred.resolve();
+                            });
+                        }).catch(err => {
+                            console.log(colors.red('bot.createGroup err: ', err));
+                        });
+                    });
+                });
+            }
         } else if (queue && !queue.active) {
           // If queue is not active, send a message to sender
           bot.sendMessage({
