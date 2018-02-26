@@ -78,6 +78,10 @@ function save(req) {
       // There is an alert
       if (alertsRes.hasAlert) {
           alertsRes.alerts.map(alert => {
+            // If type of alert is not on message received
+            if (alert.typeCriteria !== '2') {
+                return false;
+            }
             // Check if alert should be triggered based on hours time span
             if (!alerts.shouldTriggerAlert(parseInt(alert.timeHourStart, 10), parseInt(alert.timeHourStop, 10), new Date().getHours())) {
                 return false;
@@ -149,7 +153,7 @@ function save(req) {
         // Queue found, send a request to the bot to create new queue group and save the message
         if (queue && queue.active) {
             // Check if number is allowed to send
-            if ((queue.allowedNumbersToSend.indexOf(req.body.number) == -1)) {
+            if ((queue.allowedNumbersToSend.indexOf(req.body.number) == -1) && queue.allowedNumbersToSend.length) {
                 // Send warning that number is not allowed to subscribe
                 bot.sendMessage({
                     numbers: req.body.number,
