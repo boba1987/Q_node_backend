@@ -61,13 +61,18 @@ app
     });
   })
   .get('/subscribers', passport.authenticate('jwt', { session: false }), (req, res) => { // Get list of subscribers
-    let filter = {};
-    if (req.query.status) {
-      filter = {status: req.query.status};
-    }
-    resolver.resolveGet(req, 'subscribers', filter).then(subscribers => {
-      res.send(subscribers);
-    });
+        if(req.query.status === 'active') {
+            // Hard coding this since there is no difference between active and subscribed
+            req.query.status = 'subscribed';
+        }
+
+        let filter = {};
+        if (req.query.status) {
+            filter = {status: req.query.status};
+        }
+        resolver.resolveGet(req, 'subscribers', filter).then(subscribers => {
+            res.send(subscribers);
+        });
   })
   .get('/users', passport.authenticate('jwt', { session: false }), (req, res) => { // Get list of users
     resolver.resolveGet(req, 'users').then(users => {
