@@ -34,7 +34,7 @@ function resolveGet(req, collection, filter = {}, projection = {}) {
   return deferred.promise;
 }
 
-function aggregate(req, collection, sort = {}, group = {}) {
+function aggregate(req, collection, sort = {}, group = {}, filter = '', match = {}) {
   const deferred = q.defer();
   let pageSize = parseInt(req.query.pageSize) || config.pageSize;
   const skip = 0 || (parseInt(req.query.page) - 1) * pageSize; // Zero based, page number starts at 1
@@ -58,9 +58,9 @@ function aggregate(req, collection, sort = {}, group = {}) {
   }
 
   // Get total number of pages
-  mongo.aggregate('messages', sort, group, {skip: 0, limit: 10000, filter: new RegExp(req.query.search)}, (docs) => {
+  mongo.aggregate('messages', sort, group, {skip: 0, limit: 10000, filter: new RegExp(req.query.search)}, match, (docs) => {
     totalPages = Math.ceil(docs.length/pageSize);
-    mongo.aggregate('messages', sort, group, options, callback); // Get only filtered documents
+    mongo.aggregate('messages', sort, group, options, match, callback); // Get only filtered documents
   });
 
   return deferred.promise;

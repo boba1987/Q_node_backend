@@ -41,27 +41,27 @@ function getMessages(req) {
             to: moment(moment().subtract(1, 'months').endOf('month')).format('YYYY-MM-DD')
         },
         Last15Minutes: {
-            from: moment(moment().subtract(15, 'minutes')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(15, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
         Last60Minutes: {
-            from: moment(moment().subtract(60, 'minutes')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(60, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
         Last4Hours: {
-            from: moment(moment().subtract(4, 'hours')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(4, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
         Last24Hours: {
-            from: moment(moment().subtract(24, 'hours')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(24, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
         Last7Days: {
-            from: moment(moment().subtract(7, 'days')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(7, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
         Last30Days: {
-            from: moment(moment().subtract(30, 'days')).format('YYYY-MM-DD HH:MM:SSS'),
+            from: moment(moment().subtract(30, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         }
     };
@@ -82,11 +82,16 @@ function getMessages(req) {
     uid: {$last: '$uid'}
   };
 
+  // Used for time based filtering
+  const match = {
+      $match: {time: { $gte: new Date('2017-01-01'), $lte: new Date() }}
+  };
+
   if (req.query.search) {
     filter = req.query.search;
   }
 
-  resolver.aggregate(req, 'messages', sort, projection, filter).then(messages => {
+  resolver.aggregate(req, 'messages', sort, projection, filter, match).then(messages => {
     mongo.find({}, 'queueGroups', function(queueGroups) {
       messages.items.map(message => { // Enhance each message with number of subscribers
         message.responseFrom = [];
