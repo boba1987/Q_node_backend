@@ -12,55 +12,55 @@ const utils = require('./utils');
 
 function getMessages(req) {
     const timeBasedQueries = {
-        Today: {
+        today: {
             from: new Date().toJSON().slice(0,10),
             to: new Date().toJSON()
         },
-        WeekToDate: {
+        weekToDate: {
             from: moment(moment().startOf('week')).format('YYYY-MM-DD'),
             to: new Date().toJSON()
         },
-        MonthToDate: {
+        monthToDate: {
             from: moment(moment().startOf('month')).format('YYYY-MM-DD'),
             to: new Date().toJSON()
         },
-        YearToDate: {
+        yearToDate: {
             from: moment(moment().startOf('year')).format('YYYY-MM-DD'),
             to: new Date().toJSON()
         },
-        Yesterday: {
+        yesterday: {
             from: moment(moment().subtract(1, 'days').startOf('day')).format('YYYY-MM-DD'),
             to: moment(moment().subtract(0, 'days').startOf('day')).format('YYYY-MM-DD')
         },
-        PreviousWeek: {
+        previousWeek: {
             from: moment(moment().subtract(1, 'weeks').startOf('isoWeek')).format('YYYY-MM-DD'),
             to: moment(moment().subtract(1, 'weeks').endOf('isoWeek')).format('YYYY-MM-DD')
         },
-        PreviousMonth: {
+        previousMonth: {
             from: moment(moment().subtract(1, 'months').startOf('month')).format('YYYY-MM-DD'),
             to: moment(moment().subtract(1, 'months').endOf('month')).format('YYYY-MM-DD')
         },
-        Last15Minutes: {
+        last15Minutes: {
             from: moment(moment().subtract(15, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
-        Last60Minutes: {
+        last60Minutes: {
             from: moment(moment().subtract(60, 'minutes')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
-        Last4Hours: {
+        last4Hours: {
             from: moment(moment().subtract(4, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
-        Last24Hours: {
+        last24Hours: {
             from: moment(moment().subtract(24, 'hours')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
-        Last7Days: {
+        last7Days: {
             from: moment(moment().subtract(7, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         },
-        Last30Days: {
+        last30Days: {
             from: moment(moment().subtract(30, 'days')).format('YYYY-MM-DDTHH:MM:SSS'),
             to: new Date().toJSON()
         }
