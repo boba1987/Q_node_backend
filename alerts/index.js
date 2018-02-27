@@ -46,6 +46,12 @@ function shouldTriggerAlert(start, stop, time) {
 function save(queue, sender, message, alert) {
     console.log('Storing alert');
     const deferred = q.defer();
+    let email = '';
+
+    // Check if there is alert set as escalate option
+    if (emailValidator.validate(queue.queueEscalation)) {
+        email = queue.queueEscalation;
+    }
 
     mongo.insert({
         queue: queue.queueGroup,
@@ -54,7 +60,7 @@ function save(queue, sender, message, alert) {
         message: message.message,
         messageId: message._id,
         owner: queue.owner,
-        email: '',
+        email: email,
         alert
     }, 'alerts', () => {
         deferred.resolve();
