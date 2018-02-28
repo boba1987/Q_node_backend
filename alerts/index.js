@@ -12,6 +12,11 @@ const alertActions = {
     2: AlertQueueOwnerByMessage
 };
 
+const alertTimeFrames = {
+  1: 60000,
+  2: 3600000
+};
+
 module.exports = {
     sendMail,
     sendSms,
@@ -19,8 +24,105 @@ module.exports = {
     alertActions,
     escalateAlert,
     save,
-    shouldTriggerAlert
+    shouldTriggerAlert,
+    cron
 };
+
+// Cron job that runs to check number of subscribers on every queue
+function cron() {
+    mongo.find({}, 'queues', (queues) => {
+        queues.map(queue => {
+            let hasAlert = '';
+            let doCron = true;
+            // Check which alert to reset
+            if (queue.alerts) {
+                JSON.parse(queue.alerts).map(alert => {
+                    // Only queue has less subscribers criteria taken into consider
+                    if (alert.typeCriteria !== '1') {
+                        return false;
+                    }
+
+                    if (alert.minSubscribers <= queue.subscribed.length && alert.repeatedTimes >= alert.repeatalert) {
+                        // If there are enough subscribers reset counter
+                        let updatedAlerts = JSON.parse(queue.alerts).map(alertParsed => {
+                            if (JSON.stringify(alertParsed) === JSON.stringify(alert)) {
+                                alertParsed.repeatedTimes = 0;
+                                alertParsed.LastCalled = '';
+                            }
+
+                            return alertParsed;
+                        });
+
+                        mongo.update({queueType: queue.queueType}, {$set: {alerts: JSON.stringify(updatedAlerts)}}, 'queues');
+                    }
+                });
+            }
+
+            checkAlerts(queue.queueType).then(alertsRes => {
+                // There is an alert
+                if (alertsRes.hasAlert) {
+                    alertsRes.alerts.map(alert => {
+                        // Only queue has less subscribers criteria taken into consider
+                        if (alert.typeCriteria !== '1') {
+                            return false;
+                        }
+                        // If alert should be triggered based on the time frame
+                        if ((new Date().getTime() - new Date(alert.LastCalled).getTime()) < alertTimeFrames[alert.timeframe]) {
+                            return false;
+                        }
+                        // Check if alert should be triggered based on hours time span
+                        if (!shouldTriggerAlert(parseInt(alert.timeHourStart, 10), parseInt(alert.timeHourStop, 10), new Date().getHours())) {
+                            return false;
+                        }
+                        // Check if alert should be triggered based on days of the week time span
+                        if (!shouldTriggerAlert(parseInt(alert.dayOfWeekFrom, 10), parseInt(alert.dayOfWeekTo, 10), new Date().getDay())) {
+                            return false;
+                        }
+                        // Check if number of max nubmer of alerts triggered is reached
+                        if (alert.repeatedTimes >= alert.repeatalert) {
+                            return false;
+                        }
+
+                        // Update alert that is triggeredrs
+                        let updatedAlerts = JSON.parse(queue.alerts).map(alertParsed => {
+                            if (JSON.stringify(alertParsed) === JSON.stringify(alert)) {
+                                if (!alertParsed.repeatedTimes) {
+                                    alertParsed.repeatedTimes = 0;
+                                }
+
+                                alertParsed.repeatedTimes = alertParsed.repeatedTimes+1;
+                                alertParsed.LastCalled = new Date();
+                            }
+
+                            return alertParsed;
+                        });
+
+                        mongo.update({queueType: queue.queueType}, {$set: {alerts: JSON.stringify(updatedAlerts)}}, 'queues');
+
+                        // Mark message has alert
+                        hasAlert = {
+                            message: 'Queue HAS less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length,
+                            alert
+                        };
+
+                        let message = alertsRes.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
+                        // If owner should be messaged
+                        if (alert.messageOwner) {
+                            alertActions['2'](alertsRes.queue, message).then(() => {
+                                console.log('alert.messageOwner done');
+                            }).catch(err => {
+                                console.log(colors.red('alert.messageOwner err: ', err));
+                            });
+                        }
+
+                        // Escalate alert
+                        escalateAlert(alert, alertsRes.queue, message);
+                    });
+                }
+            });
+        });
+    });
+}
 
 // Compare start and stop time
 function checkTimeSpan(start, stop, time) {
@@ -61,7 +163,7 @@ function save(queue, sender, message, alert) {
         messageId: message._id,
         owner: queue.owner,
         email: email,
-        alert
+        alert: alert.message
     }, 'alerts', () => {
         deferred.resolve();
     });
@@ -114,7 +216,7 @@ function escalateAlert(alert, queue, message) {
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error) => {
             if (error) {
-                deferred.reject()
+                deferred.reject();
                 return console.log('transporter.sendMail: ', error);
             }
 
@@ -144,15 +246,19 @@ function checkAlerts(queue) {
 
     mongo.findOne({queueType: queue}, {}, 'queues', (queue) => {
         // Check for minimum number of subscribers
-        checkMinimumSubscribers(queue).then(alerts => {
-            // If alert true, trigger appropriate action
-            if (alerts) {
-                deferred.resolve({hasAlert: true, queue, alerts});
-            } else {
-                deferred.resolve(false);
-            }
-        })
-    })
+        if (queue.alerts) {
+            checkMinimumSubscribers(queue).then(alerts => {
+                // If alert true, trigger appropriate action
+                if (alerts) {
+                    deferred.resolve({hasAlert: true, queue, alerts});
+                } else {
+                    deferred.resolve(false);
+                }
+            })
+        } else {
+            deferred.resolve(false);
+        }
+    });
 
     return deferred.promise;
 }

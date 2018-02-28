@@ -68,6 +68,23 @@ function subscribe(req) {
               }).then(() => {
                 console.log(colors.green(new Date(), req.body.number + ' subscribed to ' + req.body.queue));
                 updateSubcribers('subscribed', req.body.queue, req.body.number);
+                // Reset subscribers alert if there is enough subscribers in the queue
+                JSON.parse(queue.alerts).map(alert => {
+                 if (alert.typeCriteria == '1' && alert.minSubscribers >= queue.subscribed.length) {
+                     // If there are enough subscribers reset counter
+                     let updatedAlerts = JSON.parse(queue.alerts).map(alertParsed => {
+                         if (JSON.stringify(alertParsed) === JSON.stringify(alert)) {
+                             alertParsed.repeatedTimes = 0;
+                             alertParsed.LastCalled = '';
+                         }
+
+                         return alertParsed;
+                     });
+
+                     mongo.update({queueType: queue.queueType}, {$set: {alerts: JSON.stringify(updatedAlerts)}}, 'queues');
+                 }
+                });
+
                 deferred.resolve();
               });
             });

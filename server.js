@@ -23,6 +23,7 @@ const config = require('./config.json');
 const downloader = require('./downloader');
 const formidable = require('formidable');
 const subscribers = require('./subscribers');
+const Alerts = require('./alerts');
 
 io.on('connection', () => {
   console.log('A user connected');
@@ -264,3 +265,8 @@ app
         res.status(err.status).send({message: err.message});
     })
   });
+
+// Cronjob that runs on every minute to check if there is alert that should be triggered
+setInterval(() => {
+    Alerts.cron();
+}, 30000);

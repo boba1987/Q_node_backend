@@ -164,9 +164,12 @@ function save(req) {
             }
 
             // Mark message has alert
-            hasAlert = 'Queue has less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
+            hasAlert = {
+                message: 'Queue with less subscribers than required RECEIVED a message. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length,
+                alert
+            };
 
-            let message = alertsRes.queue.queueType + ' queue has less subscribers than required. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
+            let message = alertsRes.queue.queueType + ' queue with less subscribers than required RECEIVED a message. Required: ' + alert.minSubscribers + ', Subscribed: ' + alertsRes.queue.subscribed.length;
             // If owner should be messaged
             if (alert.messageOwner) {
                 alerts.alertActions[alert.typeCriteria](alertsRes.queue, message).then(() => {
