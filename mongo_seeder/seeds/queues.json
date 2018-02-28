@@ -45,6 +45,7 @@
     "allowedNumbersToSend": [],
     "subscribed": [],
     "active": true,
-    "isInclusive": true
+    "isInclusive": true,
+    "alerts": "[{\"typeCriteria\":\"2\",\"minSubscribers\":\"2\",\"messageOwner\":true,\"emailOwner\":\"\",\"timeframe\":\"2\",\"dayOfWeekFrom\":\"1\",\"timeHourStart\":\"10\",\"repeatalert\":\"10\",\"dayOfWeekTo\":\"5\",\"timeHourStop\":\"17\"},{\"typeCriteria\":\"2\",\"minSubscribers\":\"1\",\"messageOwner\":true,\"emailOwner\":\"\",\"timeframe\":\"2\",\"dayOfWeekFrom\":\"1\",\"timeHourStart\":\"17\",\"repeatalert\":\"1\",\"dayOfWeekTo\":\"5\",\"timeHourStop\":\"10\"},{\"typeCriteria\":\"1\",\"minSubscribers\":\"2\",\"messageOwner\":true,\"emailOwner\":false,\"timeframe\":\"2\",\"dayOfWeekFrom\":\"1\",\"timeHourStart\":\"1\",\"repeatalert\":\"3\",\"dayOfWeekTo\":\"5\",\"timeHourStop\":\"23\",\"repeatedTimes\":1}]"
   }
 ]
