@@ -3,3 +3,4 @@ node_modules
 secrets
 allowed_numbers
 .idea
+access.log
