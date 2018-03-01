@@ -117,6 +117,8 @@ function cron() {
 
                         // Escalate alert
                         escalateAlert(alert, alertsRes.queue, message);
+                        // Storing alert
+                        save({queueGroup: alertsRes.queue.queueType}, '', '', hasAlert);
                     });
                 }
             });
