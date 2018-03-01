@@ -54,7 +54,7 @@ function subscribe(req) {
               numbers: req.body.number,
               message: 'You are already subscribed to  ' + req.body.queue + ' You are 1 of ' + activeSubscribers + ' active subscribers.'
             }).then(() => {
-              console.log(colors.red(new Date(), req.body.number + 'is allready subscribed to ' + req.body.queue));
+              console.log(colors.red(new Date(), req.body.number + ' is allready subscribed to ' + req.body.queue));
               deferred.resolve();
             });
           } else {
