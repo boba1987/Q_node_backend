@@ -53,8 +53,14 @@ function editStatus(req) {
 function create(req) {
   const deferred = q.defer();
 
-  utils.extractFields(req).then((fields) => {
-      utils.save(fields, deferred);
+  utils.extractFields(req).then(fields => {
+      mongo.find({queueType: fields.queueType}, 'queues', (queues => {
+          if (queues.length) {
+              deferred.reject({status: 400, message: 'Queue already exists'});
+          } else {
+              utils.save(fields, deferred);
+          }
+      }));
   }).catch(err => {
       deferred.reject({status: err.status});
   });

@@ -24,6 +24,8 @@ const downloader = require('./downloader');
 const formidable = require('formidable');
 const subscribers = require('./subscribers');
 const Alerts = require('./alerts');
+const morgan = require('morgan');
+const path = require('path');
 
 io.on('connection', () => {
   console.log('A user connected');
@@ -43,6 +45,12 @@ app
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
   });
+
+// create a write stream (in append mode)
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
+morgan.token('type', function (req) { return req.headers['Authorization'] });
+// setup the logger
+app.use(morgan(':date[iso] :remote-addr :remote-user :method :url HTTP/:http-version :req[Authorization] :status :res[content-length] - :response-time ms',  {stream: accessLogStream}));
 
 // GET routes
 app
