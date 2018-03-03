@@ -55,7 +55,7 @@ function login(req) {
         var token = jwt.sign({email: user.email, role: user.role, active: user.active}, secretKey.key);
         let tokenExpiration = config.tokenExpiration || 60000000;
         // Save token to the token store
-        const tokenObj = {token, time: new Date().getTime(), user: user._id, expiration: new Date().getTime() + tokenExpiration};
+        const tokenObj = {token, time: new Date().getTime(), user: user.email, expiration: new Date().getTime() + tokenExpiration};
         mongo.insert(tokenObj, 'token_store' );
         // Atthach token to a user
         mongo.update({_id: user._id}, {$set: {auth: tokenObj}}, 'users', function(){
