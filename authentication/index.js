@@ -8,6 +8,8 @@ const passwordChangeSchema = require('../schemas/passwordChange.json');
 const validator = require('../validator');
 const q = require('q');
 const utils = require('../utils');
+const nodemailer = require('nodemailer');
+const validator = require('../validator');
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
@@ -79,13 +81,41 @@ function forgotPassword(req) {
     if (user) {
       let tempPassword = utils.makeRandomHash(5);
       mongo.update({_id: user._id}, {$set: {password: tempPassword}}, 'users', () => {
-        // TODO: send an email to a user with generated tempPassword
-        console.log(tempPassword);
-      })
-      return deferred.resolve();
-    }
+          if (emailValidator.validate(user.email)) {
+              console.log('Escalating alert - email');
+              // Send an email
+              let transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  port: 587,
+                  secure: false, // true for 465, false for other ports
+                  auth: {
+                      user: 'medxq.info@gmail.com',
+                      pass: 'medxqapp'
+                  }
+              });
 
-    deferred.reject();
+              // setup email data with unicode symbols
+              let mailOptions = {
+                  from: '"MedxQ Info" <medxq.info@gmail.com>', // sender address
+                  to: user.email, // list of receivers
+                  subject: 'Password reset', // Subject line
+                  text: 'This is your temporary password. Please change it as soon as possible. New password: ' + tempPassword
+              };
+
+              // send mail with defined transport object
+              transporter.sendMail(mailOptions, (error) => {
+                  if (error) {
+                      deferred.reject();
+                      return console.log('transporter.sendMail: ', error);
+                  }
+
+                  deferred.resolve();
+              });
+          }
+      });
+    } else {
+        deferred.reject();
+    }
   });
 
   return deferred.promise;
