@@ -9,7 +9,7 @@ const validator = require('../validator');
 const q = require('q');
 const utils = require('../utils');
 const nodemailer = require('nodemailer');
-const validator = require('../validator');
+const emailValidator = require('email-validator');
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
