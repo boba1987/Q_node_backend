@@ -24,9 +24,12 @@ const downloader = require('./downloader');
 const formidable = require('formidable');
 const subscribers = require('./subscribers');
 const Alerts = require('./alerts');
-const morgan = require('morgan');
-const path = require('path');
-const cookieParser = require('cookie-parser')
+const interceptor = require('express-interceptor');
+const writeFile = require('write');
+var readFile = require('read-file');
+
+
+const os = require("os");
 
 io.on('connection', () => {
   console.log('A user connected');
@@ -34,33 +37,42 @@ io.on('connection', () => {
 
 passport.use(authentication.strategy);
 
+// Intercept requests and write those in log file
+const reqInterceptor = interceptor(function(req, res){
+    return {
+        isInterceptable: function(){
+            if (req.headers.authorization) {
+                return true;
+            }
+
+            return false
+        },
+        intercept: function(body, send) {
+            mongo.findOne({token: req.headers.authorization.split(' ')[1]}, {}, 'token_store', (user) => {
+                readFile('access.log', 'utf8', (err, buffer) => {
+                    writeFile('access.log', buffer + '\n' + new Date + ' ' + user.user + ' ' + req.method + ' ' + req.path + ' ' + JSON.stringify(req.body) + ' ' + res.statusCode, function(err) {
+                        if (err) console.log(err);
+                    });
+                });
+            });
+            send(body);
+        }
+    };
+});
+
 app
     .use(passport.initialize())
     // Parse application/x-www-form-urlencoded
     .use(bodyParser.urlencoded({extended: true}))
     .use(bodyParser.json()) // Parse application/json
     .use(bodyParser.text())
-    .use(cookieParser())
+    .use(reqInterceptor)
     .use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', config.allowOrigin);
         res.header('Access-Control-Allow-Credentials', 'true');
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
         next();
   });
-
-// create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
-morgan.token('type', function (req) {
-    if (req.headers['authorization']) {
-        return req.headers['authorization'].split(' ')[1];
-    }
-});
-morgan('combined', {
-    skip: function (req) { return req.method !== 'OPTIONS'; }
-});
-
-// setup the logger
-app.use(morgan(':date[iso] :remote-addr :remote-user :method :url :type :status - :response-time ms',  {stream: accessLogStream}));
 
 // GET routes
 app

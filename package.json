@@ -17,6 +17,7 @@
     "dateformat": "^3.0.2",
     "email-validator": "^1.1.1",
     "express": "^4.16.2",
+    "express-interceptor": "^1.2.0",
     "formidable": "^1.1.1",
     "json2csv": "^3.11.5",
     "jsonschema": "^1.2.2",
@@ -29,8 +30,10 @@
     "passport": "^0.3.2",
     "passport-jwt": "^3.0.1",
     "q": "^1.5.1",
+    "read-file": "^0.2.0",
     "request": "^2.83.0",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "write": "^1.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.3",
