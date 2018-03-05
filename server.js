@@ -49,7 +49,7 @@ const reqInterceptor = interceptor(function(req, res){
         },
         intercept: function(body, send) {
             mongo.findOne({token: req.headers.authorization.split(' ')[1]}, {}, 'token_store', (user) => {
-                readFile('access.log', 'utf8', (err, buffer) => {
+                readFile('access.log', 'utf8', (err, buffer = '') => {
                     writeFile('access.log', buffer + '\n' + new Date + ' ' + user.user + ' ' + req.method + ' ' + req.path + ' ' + JSON.stringify(req.body) + ' ' + res.statusCode, function(err) {
                         if (err) console.log(err);
                     });
