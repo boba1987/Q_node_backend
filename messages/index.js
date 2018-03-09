@@ -145,7 +145,10 @@ function save(req) {
 
     // Check alert criteria and perform an action if required
     // Get queue type
-    let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
+      let queueType = req.body.message.substr(0, req.body.message.indexOf(' '));
+      if (req.body.queueGroup) {
+          queueType = req.body.queueGroup.split('_')[0];
+      }
     alerts.checkAlerts(queueType).then(alertsRes => {
       // There is an alert
       if (alertsRes.hasAlert) {
@@ -207,6 +210,7 @@ function save(req) {
                 // Get original message and send to owner
                 utils.sendAckMessage(req, deferred, queueGroup[0]);
               }
+              deferred.resolve()
             });
           } else {
             // If it is acknowledgement message

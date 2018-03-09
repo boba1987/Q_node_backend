@@ -243,10 +243,10 @@ function escalateAlert(alert, queue, message) {
 }
 
 // Check for if some alert criteria should be triggered
-function checkAlerts(queue) {
+function checkAlerts(queueType) {
     const deferred = q.defer();
 
-    mongo.findOne({queueType: queue}, {}, 'queues', (queue) => {
+    mongo.findOne({queueType: queueType}, {}, 'queues', (queue) => {
         // Check for minimum number of subscribers
         if (queue.alerts) {
             checkMinimumSubscribers(queue).then(alerts => {
